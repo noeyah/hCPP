@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cpp\Chat.pb.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp\Room.pb.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="jinja2\cpp\PacketID.h.j2">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp\Enums.pb.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="cpp\Chat.pb.cc">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="cpp\Room.pb.cc">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="cpp\Enums.pb.cc">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RunOnlyProtoc.bat">
+      <Filter>소스 파일</Filter>
+    </None>
+    <None Include="proto\Chat.proto" />
+    <None Include="proto\Room.proto" />
+    <None Include="csharp\Chat.cs" />
+    <None Include="csharp\Room.cs" />
+    <None Include="Protobuf\abseil_dll.dll" />
+    <None Include="Protobuf\libprotobuf.dll" />
+    <None Include="Protobuf\libprotoc.dll" />
+    <None Include="Protobuf\protoc.exe" />
+    <None Include="generate_packet.py" />
+    <None Include="Run.bat">
+      <Filter>소스 파일</Filter>
+    </None>
+    <None Include="csharp\PacketHelper.cs" />
+    <None Include="jinja2\cpp\PacketDispatcherInit.cpp.j2" />
+    <None Include="jinja2\csharp\PacketHelper.cs.j2" />
+    <None Include="csharp\PacketID.cs" />
+    <None Include="jinja2\csharp\PacketID.cs.j2" />
+    <None Include="proto\Enums.proto" />
+    <None Include="csharp\Enums.cs" />
+    <None Include="jinja2\cpp\PacketRegister.cpp.j2" />
+    <None Include="jinja2\cpp_client\PacketID.h.j2" />
+    <None Include="jinja2\cpp_client\PacketRegister.cpp.j2" />
+    <None Include="jinja2\cpp_client\PacketDispatcherInit.cpp.j2" />
+    <None Include="jinja2\cpp_client\PacketEnums.h.j2" />
+    <None Include="jinja2\cpp\PacketEnums.h.j2" />
+    <None Include="jinja2\cpp\PacketHandler.h.j2" />
+    <None Include="jinja2\cpp_client\PacketHandler.h.j2" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,21 @@
+syntax = "proto3";
+package packet;
+
+import "Enums.proto";
+
+message ChatReq
+{
+	string desc = 1;
+}
+
+message ChatRes
+{
+	ErrorCode errorCode = 1;
+	string desc = 2;
+}
+
+message ChatNot
+{
+	uint64 sessionId = 1;
+	string desc = 2;
+}

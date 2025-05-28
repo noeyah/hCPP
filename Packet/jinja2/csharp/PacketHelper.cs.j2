@@ -1,0 +1,25 @@
+// 이 파일은 스크립트로 생성됨
+// 위치 : Solution/Packet/jinja2/csharp
+
+using Google.Protobuf;
+
+namespace Packet;
+
+public static partial class PacketHelper
+{
+	private static readonly Dictionary<Type, PacketID> _typeToId = new();
+	private static readonly Dictionary<ushort, MessageParser> _idToParser = new();
+
+	static PacketHelper()
+	{
+		// Type To PacketID 초기화 코드
+{% for packet in packet_ids %}
+		_typeToId.Add(typeof({{packet.name}}), PacketID.{{packet.name}});
+{% endfor %}
+
+		// PacketID To Parser 초기화 코드
+{% for packet in packet_ids %}
+		_idToParser.Add((ushort)PacketID.{{packet.name}}, {{packet.name}}.Parser);
+{% endfor %}
+	}
+}

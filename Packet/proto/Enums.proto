@@ -1,0 +1,23 @@
+syntax = "proto3";
+package packet;
+
+enum Defaults
+{
+	DEFAULT_DEFINE = 0;
+	NAME_MAX_LIMIT = 12;
+	MESSAGE_MAX_LIMIT = 500;
+}
+
+enum ErrorCode
+{
+	OK = 0;
+	FAIL = 1;
+
+	FAIL_ALREADY_IN_ROOM = 100;
+	FAIL_NOT_IN_ROOM = 101;
+	FAIL_EMPTY_NAME = 102;
+	FAIL_EXCEED_NAME_LIMIT = 103;
+
+	FAIL_EXCEED_MESSAGE_LIMIT = 110;
+	FAIL_EMPTY_MESSAGE = 111;
+}

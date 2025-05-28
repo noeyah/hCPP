@@ -1,0 +1,30 @@
+#pragma once
+#include <mutex>
+#include <memory>
+#include <unordered_map>
+#include <functional>
+#include <Memory/Container.h>
+#include <Network/Buffer/PacketBuffer.h>
+#include "User.h"
+
+class ClientSession;
+
+class Room
+{
+public:
+	void JoinUser(uint64_t sessionId, const std::string& name, std::weak_ptr<ClientSession> session);
+	void LeaveUser(uint64_t sessionId);
+	void ForEachUser(const std::function<void(const User&)>& fn) const;
+	void Broadcast(std::shared_ptr<hlib::net::PacketBuffer> buffer, uint64_t excludeId = 0);
+
+	bool IsMember(uint64_t sessionId);
+
+private:
+	hlib::Vector<std::shared_ptr<ClientSession>> GetSessionPtrs(uint64_t excludeId) const;
+
+private:
+	mutable std::mutex mtx_;
+	std::unordered_map<uint64_t, User> users_;
+
+};
+

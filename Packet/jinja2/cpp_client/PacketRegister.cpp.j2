@@ -1,0 +1,18 @@
+// 이 파일은 스크립트로 생성됨
+// 위치 : Solution/Packet/jinja2/cpp_client
+
+#include "PacketRegister.h"
+
+{% for name in file_names %}
+#include <{{name}}.pb.h>
+{% endfor %}
+
+using namespace packet;
+
+void PacketRegister::Initialize()
+{
+	// 초기화 코드 자동으로 생성됨
+{% for packet in packet_ids %}
+	RegisterPacketID<{{packet.name}}>(PacketID::{{packet.name}});
+{% endfor %}
+}

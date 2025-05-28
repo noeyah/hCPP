@@ -1,0 +1,78 @@
+// 이 파일은 스크립트로 생성됨
+// 위치 : Solution/Packet/jinja2/cpp
+
+#pragma once
+#include <string_view>
+#include <string>
+#include <format>
+#include <type_traits>
+#include "PacketID.h"
+
+{% for name in file_names %}
+#include <{{name}}.pb.h>
+{% endfor %}
+
+// PacketID
+inline std::string_view PacketIdToString(packet::PacketID id)
+{
+	switch (id)
+	{
+{% for packet in packet_ids %}
+	case packet::PacketID::{{packet.name}}:
+		return "{{packet.name}}";
+{% endfor %}
+	case packet::PacketID::None:
+		return "None";
+	default:
+		return "UnknownPacketID";
+	}
+}
+
+// Packet Enums To String 자동 생성
+
+{% for enum_name, members in enums.items() %}
+// {{enum_name}}
+inline std::string_view {{enum_name}}ToString(packet::{{enum_name}} value)
+{
+	switch (value)
+	{
+{% for member_info in members %}
+	case packet::{{enum_name}}::{{member_info.name}}:
+		return "{{member_info.name}}";
+{% endfor %}
+	default:
+		return "Unknown{{enum_name}}";
+	}
+}
+{% endfor %}
+
+
+// PacketID Formater
+template <>
+struct std::formatter<packet::PacketID> : std::formatter<std::string>
+{
+	template <typename FormatContext>
+	inline auto format(packet::PacketID id, FormatContext& ctx) const
+	{
+		std::string_view sv = PacketIdToString(id);
+		auto num = static_cast<std::underlying_type_t<packet::PacketID>>(id);
+		return std::formatter<std::string>::format(std::format("{}({})", sv, num), ctx);
+	}
+};
+
+// Packet Enums Formater 자동 생성
+
+{% for enum_name, members in enums.items() %}
+// {{enum_name}}
+template <>
+struct std::formatter<packet::{{enum_name}}> : std::formatter<std::string>
+{
+	template <typename FormatContext>
+	inline auto format(packet::{{enum_name}} value, FormatContext& ctx) const
+	{
+		std::string_view sv = {{enum_name}}ToString(value);
+		auto num = static_cast<std::underlying_type_t<packet::{{enum_name}}>>(value);
+		return std::formatter<std::string>::format(std::format("{}({})", sv, num), ctx);
+	}
+};
+{% endfor %}

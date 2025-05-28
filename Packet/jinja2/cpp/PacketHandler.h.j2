@@ -1,0 +1,28 @@
+// 이 파일은 스크립트로 생성됨
+// 위치 : Solution/Packet/jinja2/cpp
+
+#pragma once
+#include <memory>
+
+{% for name in file_names %}
+#include <{{name}}.pb.h>
+{% endfor %}
+
+class ClientSession;
+class Room;
+
+class PacketHandler
+{
+public:
+	PacketHandler(Room& room);
+	void OnDisconnected(std::shared_ptr<ClientSession>& session);
+
+	// 자동 생성
+{% for name in req_names %}
+	void OnReceivePacket(std::shared_ptr<ClientSession>& session, const packet::{{name}}& req);
+{% endfor %}
+	// 여기까지 자동 생성
+
+private:
+	Room& room_;
+};

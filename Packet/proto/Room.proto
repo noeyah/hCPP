@@ -1,0 +1,40 @@
+syntax = "proto3";
+package packet;
+
+import "Enums.proto";
+
+message Player
+{
+	uint64 sessionId = 1;
+	string name = 2;
+}
+
+message JoinRoomReq
+{
+	string name = 1;
+}
+
+message JoinRoomRes
+{
+	ErrorCode errorCode = 1;
+	repeated Player players = 2;
+}
+
+message JoinRoomNot
+{
+	Player player = 1;
+}
+
+message LeaveRoomReq
+{
+}
+
+message LeaveRoomRes
+{
+	ErrorCode errorCode = 1;
+}
+
+message LeaveRoomNot
+{
+	uint64 sessionId = 1;
+}

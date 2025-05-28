@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\bear.png" />
+    <None Remove="Resources\cat.png" />
+    <None Remove="Resources\chicken.png" />
+    <None Remove="Resources\lion.png" />
+    <None Remove="Resources\panda.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Packet\csharp\Chat.cs" Link="Packet\Chat.cs" />
+    <Compile Include="..\Packet\csharp\Enums.cs" Link="Packet\Enums.cs" />
+    <Compile Include="..\Packet\csharp\PacketHelper.cs" Link="Packet\PacketHelper.cs" />
+    <Compile Include="..\Packet\csharp\PacketID.cs" Link="Packet\PacketID.cs" />
+    <Compile Include="..\Packet\csharp\Room.cs" Link="Packet\Room.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\bear.png" />
+    <EmbeddedResource Include="Resources\cat.png" />
+    <EmbeddedResource Include="Resources\chicken.png" />
+    <EmbeddedResource Include="Resources\lion.png" />
+    <EmbeddedResource Include="Resources\panda.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.30.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\hCSharpLibrary\hCSharpLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

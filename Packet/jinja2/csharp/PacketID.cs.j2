@@ -1,0 +1,9 @@
+﻿namespace Packet;
+
+public enum PacketID : ushort
+{
+	None = 0,
+{% for packet in packet_ids %}
+	{{packet.name}} = {{packet.num}},
+{% endfor %}
+}

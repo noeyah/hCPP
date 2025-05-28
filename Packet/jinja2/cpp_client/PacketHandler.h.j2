@@ -1,0 +1,36 @@
+// 이 파일은 스크립트로 생성됨
+// 위치 : Solution/Packet/jinja2/cpp_client
+
+#pragma once
+#include <memory>
+#include <Task/Scheduler.h>
+
+{% for name in file_names %}
+#include <{{name}}.pb.h>
+{% endfor %}
+
+class ServerSession;
+class Room;
+
+class PacketHandler
+{
+public:
+	PacketHandler(hlib::task::Scheduler& scheduler);
+
+	void OnConnected(std::shared_ptr<ServerSession>& session);
+	void OnDisconnected(std::shared_ptr<ServerSession>& session);
+
+	// 자동 생성
+{% for name in res_names %}
+	void OnReceivePacket(std::shared_ptr<ServerSession>& session, const packet::{{name}}& res);
+{% endfor %}
+
+{% for name in not_names %}
+	void OnReceivePacket(std::shared_ptr<ServerSession>& session, const packet::{{name}}& noti);
+{% endfor %}
+	// 여기까지 자동 생성
+
+private:
+	hlib::task::Scheduler& scheduler_;
+};
+
