@@ -155,7 +155,7 @@ namespace hlib::net
 		case WSAECONNRESET:
 		case WSAECONNABORTED:
 		{
-			LOG_INFO("session({}) disconnected. state : {}", GetSessionId(), state_.load());
+			LOG_DEBUG("session({}) disconnected. state : {}", GetSessionId(), state_.load());
 			Disconnect();
 		} break;
 		default:
