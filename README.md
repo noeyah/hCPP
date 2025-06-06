@@ -95,9 +95,7 @@ hCPP
 ### 테스트용 프로젝트
 - TestServer, TestClient, DummyClient
 
-- TestServer 실행 화면
 
-![TestServer](https://github.com/user-attachments/assets/79358804-77c3-4a15-bb88-53466a425e2a)
 
 - TestClient 실행 화면
 
