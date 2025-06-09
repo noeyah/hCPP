@@ -130,6 +130,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)Packet\cpp;$(SolutionDir)hCPPLibrary;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ExternalWarningLevel>Level1</ExternalWarningLevel>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
