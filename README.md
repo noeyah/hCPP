@@ -48,13 +48,6 @@ git clone https://github.com/noeyah/hCPP.git
 	- 빌드된 파일을 실행합니다.
 
 ## 📚 프로젝트 구성
-- hCPPLibrary : 서버 개발을 위한 핵심 컴포넌트 모음. 다른 프로젝트에서 이 라이브러리를 참조하여 서버 및 클라이언트 기능을 구현합니다.
-- hCSharpLibrary : C# 환경을 위한 비동기 네트워크 라이브러리.
-- GTest : hCPPLibrary 모듈의 검증을 위한 유닛 테스트.
-- Packet : 패킷 저장소. Python 스크립트로 proto 파일에서 정의한 메시지를 추출하여 PacketID, 패킷 매핑, Enum 문자열 변환 등 C++, C# 코드를 생성합니다.
-- TestServer : C++ 네트워크 라이브러리 기능 검증을 위한 서버.
-- DummyClient : C++ 네트워크 라이브러리 기능 검증을 위한 클라이언트.
-- TestCLient : C# 네트워크 라이브러리 기능 검증을 위한 클라이언트. 채팅 UI를 제공합니다.
 
 ```
 hCPP
@@ -71,7 +64,7 @@ hCPP
 ├─hCSharpLibrary (C# 라이브러리)
 │  └─Network
 ├─GTest (C++ 라이브러리 유닛 테스트)
-├─Packet (C++)
+├─Packet (패킷 정의 및 코드 반자동화)
 │  ├─cpp
 │  ├─csharp
 │  ├─jinja2
@@ -95,6 +88,9 @@ hCPP
 - Log : 파일 및 콘솔 출력 로그 시스템 제공
 - 그 외 Command, Util : 보조 유틸리티
 
+### 프로젝트 : hCSharpLibrary
+
+C# 환경을 위한 비동기 네트워크 라이브러리.
 
 ### 프로젝트 : GTest
 
@@ -105,24 +101,117 @@ hCPPLibrary 모듈의 검증을 위한 유닛 테스트.
 ![GTest](https://github.com/user-attachments/assets/6a9370b3-fb66-44b4-9bce-a2f8ec7d875d)
 
 
+### 프로젝트 : Packet
+
+- 패킷 저장소. 
+- Python 스크립트를 사용하여 proto 파일에서 추출한 메시지로 PacketID, 패킷 매핑, Enum 문자열 변환 등 C++, C# 코드를 생성합니다.
+
+
 ### 프로젝트 : TestServer, DummyClient
 
-C++ 네트워크 라이브러리 기능 검증을 위한 서버 및 클라이언트.
+C++ 네트워크 라이브러리 기능 검증을 위한 서버 및 클라이언트. 
 
 
 ### 프로젝트 : TestClient
 
-C# 네트워크 라이브러리 기능 검증을 위한 클라이언트. 채팅 UI를 제공합니다.
+- C# 네트워크 라이브러리 기능 검증을 위한 클라이언트. 
+- 채팅 UI를 제공합니다.
 
 #### 실행 화면
 
 ![TestClient](https://github.com/user-attachments/assets/0cf0df3b-1b1c-4669-908f-87338a02eb75)
 
-### 프로젝트 : Packet
+## hCPPLibrary 사용 예시
 
-- 패킷 저장소. 
-- Python 스크립트로 proto 파일에서 정의한 메시지를 추출하여 PacketID, 패킷 매핑, Enum 문자열 변환 등 C++, C# 코드를 생성합니다.
+### Task
 
+#### 잡큐에 작업 등록
+```cpp
+#include "Task/TaskUtil.h"
+IJobQueue& jobQueue_;
+
+PushJob(jobQueue_, [](){
+	// 스레드풀의 워커 스레드에 의해 실행될 작업
+	std::cout << “Hello” << std::endl;
+});
+```
+#### 스케줄러를 통한 예약 작업 등록
+```cpp
+#include "Task/Scheduler.h"
+
+// Scheduler 객체에 IJobQueue 주입 필요
+scheduler_.PushAfter(1234, [](){
+	// 1234ms 후 스레드풀의 워커 스레드에 의해 실행될 작업
+	std::cout << “World” << std::endl;
+});
+```
+
+### Database
+
+#### 커넥션풀 세팅 이후 Select 예시
+```cpp
+#include "DB/DBConnectionPool.h"
+#include "DB/DBConnection.h"
+#include "DB/DBQuery.h"
+
+auto conn = pool_.Pop();
+DBQuery<1, 2> query(*conn.get(), “SELECT ?, ? FROM ... WHERE ... = ?”);
+query.Param(1, param1)
+	.Column(1, col1)
+	.Column(2, col2); 
+query.Execute();
+while (query.Fetch())
+{
+	// row data (col1, col2)
+}
+// 이후 conn 스마트 포인터 소멸 시 풀에 자동 반납
+```
+
+### Network
+
+#### NetServer 초기화 및 시작 예시
+```cpp
+#include "Task/JobQueue.h"
+#include "Task/ThreadPool.h"
+#include "Network/NetConfig.h"
+#include "Network/NetService/NetServer.h"
+
+class MainServer
+{
+public:
+	MainServer(NetServerConfig config) 
+		: threadPool_(jobQueue_), 
+		// NetServer에 NetServerConfig, IJobQueue, Session 팩토리 주입
+		netServer_(config, jobQueue_, []() -> std::shared_ptr<ClientSession> {
+			// 사용자 Session 팩토리
+			return MakeSharedPtr<ClientSession>(); 
+		}) 
+	{
+	}
+	void Start()
+	{
+		threadPool_.Start();
+		netServer_.Start();
+	}
+private:
+	JobQueue jobQueue_;
+	ThreadPool threadPool_;
+	NetServer netServer_;
+}
+```
+#### 사용자가 Session 클래스 가상 함수 재정의
+```cpp
+#include "Network/Connection/Session.h"
+
+class ClientSession : public Session
+{
+protected:
+	// 재정의 필요
+	virtual void OnConnected() override;
+	virtual void OnDisconnected() override;
+	virtual void OnReceiveainServer(uint16_t packetId, std::span<const std::byte> packet) override;
+}
+```
 
 ## 참고 자료 및 출처
 - MSDN
