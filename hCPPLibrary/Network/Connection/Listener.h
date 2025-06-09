@@ -28,7 +28,7 @@ namespace hlib::net
 		bool Start(const SOCKADDR_IN& bindAddr, size_t acceptCount, int32_t backlog);
 		void Stop();
 
-		virtual void CompletedAsync(IoContext* context, DWORD bytesTransferd) override;
+		virtual void CompletedAsync(IoContext* context, DWORD bytesTransferred) override;
 		virtual void ErrorHandler(IoContext* context, int32_t wsaErrorCode) override;
 
 	private:

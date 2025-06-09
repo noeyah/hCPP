@@ -30,7 +30,7 @@ namespace hlib::net
 		std::byte* GetReadBuffer() { return buffer_.data() + readIdx_; }
 
 	private:
-		Vector<std::byte> buffer_;
+		Vector<std::byte> buffer_{};
 		size_t writeIdx_ = 0;
 		size_t readIdx_ = 0;
 	};

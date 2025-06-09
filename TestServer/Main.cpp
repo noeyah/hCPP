@@ -32,6 +32,7 @@ int main()
 								   cmdService.Exit();
 							   });
 
+#ifdef _DEBUG
 	cmdService.RegisterCommand("memory", "if memory mode is log, show alloc info",
 							   [](const hlib::cmd::CommandArgs& args) {
 								   hlib::Memory::Instance().Print();
@@ -41,6 +42,7 @@ int main()
 							   [](const hlib::cmd::CommandArgs& args) {
 								   hlib::net::Session::Print();
 							   });
+#endif // _DEBUG
 
 	cmdService.Run();
 }

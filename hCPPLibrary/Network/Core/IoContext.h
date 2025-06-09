@@ -74,8 +74,10 @@ namespace hlib::net
 		{
 			IoContext::Reset();
 			sendSize = 0;
+			wsaBufs.clear();
 		}
 
 		size_t sendSize = 0;
+		Vector<WSABUF> wsaBufs;
 	};
 }

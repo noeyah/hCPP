@@ -6,9 +6,8 @@ ServerSession::ServerSession(PacketDispatcher& dispatcher) : packetDispatcher_(d
 {
 }
 
-void ServerSession::OnConnected(uint64_t sid)
+void ServerSession::OnConnected()
 {
-	sid_ = sid;
 	auto session = GetSharedPtr();
 	packetDispatcher_.OnConnected(session);
 }

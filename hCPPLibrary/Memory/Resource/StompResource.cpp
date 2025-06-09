@@ -21,7 +21,7 @@ namespace hlib::resource
 		size_t totalAllocSize = CalcSize(totalSize, PAGE_SIZE);
 
 		void* base_address = ::VirtualAlloc(nullptr, totalAllocSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-		assert(base_address);
+		ASSERT_CRASH(base_address);
 
 		uint8_t* base = static_cast<uint8_t*>(base_address);
 		uint8_t* user_ptr = base + offset + padding;
@@ -52,7 +52,7 @@ namespace hlib::resource
 		// 할당 기본 주소
 		MEMORY_BASIC_INFORMATION mbi;
 		auto ret = ::VirtualQuery(_Ptr, &mbi, sizeof(mbi));
-		assert(ret != 0);
+		ASSERT_CRASH(ret != 0);
 
 		// [ 헤더 | 가드 | (패딩) 유저 데이터 | 가드 ]
 
@@ -64,15 +64,15 @@ namespace hlib::resource
 		uint8_t* suffixGuard = userPtr + header->userSize;
 
 		// 데이터 검증
-		assert(userPtr == static_cast<uint8_t*>(_Ptr));
-		assert(header->userSize == _Bytes);
+		ASSERT_CRASH(userPtr == static_cast<uint8_t*>(_Ptr));
+		ASSERT_CRASH(header->userSize == _Bytes);
 
 		// 가드 검증
 		std::vector<std::byte> guardPattern(GUARD_SIZE);
 		std::memset(guardPattern.data(), static_cast<int>(GUARD_PATTERN), GUARD_SIZE);
 
-		assert(std::memcmp(prefixGuard, guardPattern.data(), GUARD_SIZE) == 0);
-		assert(std::memcmp(suffixGuard, guardPattern.data(), GUARD_SIZE) == 0);
+		ASSERT_CRASH(std::memcmp(prefixGuard, guardPattern.data(), GUARD_SIZE) == 0);
+		ASSERT_CRASH(std::memcmp(suffixGuard, guardPattern.data(), GUARD_SIZE) == 0);
 
 		// 정상 판정 났으면 해제
 		::VirtualFree(baseAddress, 0, MEM_RELEASE);

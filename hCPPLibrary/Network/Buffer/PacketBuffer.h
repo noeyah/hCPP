@@ -2,6 +2,7 @@
 #include <memory>
 #include <cassert>
 #include "Memory/Buffer.h"
+#include "Util/Macro.h"
 
 namespace hlib::net
 {
@@ -10,12 +11,12 @@ namespace hlib::net
 	public:
 		PacketBuffer(size_t size) : capacity_(size), buffer_(Buffer::Get(size))
 		{
-			assert(capacity_ > 0);
+			ASSERT_CRASH(capacity_ > 0);
 		}
 
 		void Write(const std::byte* src, size_t size)
 		{
-			assert(capacity_ >= usedSize_ + size);
+			ASSERT_CRASH(capacity_ >= usedSize_ + size);
 
 			memcpy(WritePtr(), src, size);
 			usedSize_ += size;
@@ -23,7 +24,7 @@ namespace hlib::net
 
 		void CommitWrite(size_t size)
 		{
-			assert(capacity_ >= usedSize_ + size);
+			ASSERT_CRASH(capacity_ >= usedSize_ + size);
 			usedSize_ += size;
 		}
 

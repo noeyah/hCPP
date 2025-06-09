@@ -31,6 +31,7 @@ namespace hlib
 			return std::pmr::polymorphic_allocator<T>(resource_);
 		}
 
+#ifdef _DEBUG
 		void Print()
 		{
 			if (MEMORY_RESOURCE_MODE == MemoryMode::Log)
@@ -42,6 +43,7 @@ namespace hlib
 				}
 			}
 		}
+#endif // _DEBUG
 
 	private:
 		Memory()

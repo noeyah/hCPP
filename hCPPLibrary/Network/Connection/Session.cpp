@@ -10,11 +10,15 @@ namespace hlib::net
 {
 	Session::Session()
 	{
+#ifdef _DEBUG
 		constructionCnt_++;
+#endif // _DEBUG
 	}
 	Session::~Session()
 	{
+#ifdef _DEBUG
 		destructionCnt_++;
+#endif // _DEBUG
 
 		bufferReader_.Clear();
 		sendQueue_.Clear();
@@ -29,10 +33,12 @@ namespace hlib::net
 		}
 	}
 
+#ifdef _DEBUG
 	void Session::Print()
 	{
 		LOG_DEBUG("Session counting {} : {}", constructionCnt_.load(), destructionCnt_.load());
 	}
+#endif // _DEBUG
 
 	void Session::Initialize(SOCKET socket,
 							 SessionId sessionId,
@@ -56,7 +62,7 @@ namespace hlib::net
 	{
 		state_.store(State::State_Connected);
 
-		OnConnected(sessionId_);
+		OnConnected();
 
 		RecvAsync();
 	}
@@ -292,9 +298,9 @@ namespace hlib::net
 		}
 	}
 
-	void Session::RecvCompleted(DWORD bytesTransferd)
+	void Session::RecvCompleted(DWORD bytesTransferred)
 	{
-		if (bytesTransferd == 0)
+		if (bytesTransferred == 0)
 		{
 			LOG_INFO("session({}) recv 0", GetSessionId());
 			recvContext_.Reset();
@@ -310,10 +316,10 @@ namespace hlib::net
 		
 		auto buffer = recvContext_.recvBuffer.get();
 
-		if (!bufferReader_.Write(reinterpret_cast<const void*>(buffer), bytesTransferd))
+		if (!bufferReader_.Write(reinterpret_cast<const void*>(buffer), bytesTransferred))
 		{
 			// 버퍼 부족
-			LOG_WARN("session({}) buffer reader write failed. recv bytes : {}", GetSessionId(), bytesTransferd);
+			LOG_WARN("session({}) buffer reader write failed. recv bytes : {}", GetSessionId(), bytesTransferred);
 			recvContext_.Reset();
 			return;
 		}
@@ -346,13 +352,12 @@ namespace hlib::net
 		sendContext_.ioHandler = shared_from_this();
 
 		size_t sendBytes;
-		Vector<WSABUF> wsaBufs;
-		sendQueue_.PrepareSend(wsaBufs, MAX_SEND_BUFFER_COUNT, sendContext_.sendSize, sendBytes);
+		sendQueue_.PrepareSend(sendContext_.wsaBufs, MAX_SEND_BUFFER_COUNT, sendContext_.sendSize, sendBytes);
 
 		DWORD numOfBytes = 0;
 		auto ret = WSASend(socket_,
-						   wsaBufs.data(),
-						   static_cast<DWORD>(wsaBufs.size()),
+						   sendContext_.wsaBufs.data(),
+						   static_cast<DWORD>(sendContext_.wsaBufs.size()),
 						   &numOfBytes,
 						   0,
 						   &sendContext_,
@@ -372,9 +377,9 @@ namespace hlib::net
 		}
 	}
 
-	void Session::SendCompleted(DWORD bytesTransferd)
+	void Session::SendCompleted(DWORD bytesTransferred)
 	{
-		if (bytesTransferd == 0)
+		if (bytesTransferred == 0)
 		{
 			LOG_WARN("session({}) completed send bytes 0", GetSessionId());
 			sendContext_.Reset();
@@ -425,11 +430,12 @@ namespace hlib::net
 			PacketHeader header;
 			memcpy(&header, buffer, HEADER_SIZE);
 
-			assert(header.size <= MAX_BUFFER_SIZE);
+			ASSERT_CRASH(header.size <= MAX_BUFFER_SIZE);
 			if (bufferSize < header.size)
 				break;
 
 			std::span<const std::byte> packet(buffer + HEADER_SIZE, header.size - HEADER_SIZE);
+
 			OnReceive(header.id, packet);
 			bufferReader_.CommitRead(header.size);
 		}
@@ -445,5 +451,15 @@ namespace hlib::net
 		if (disconnectCallback_)
 			disconnectCallback_(sessionId_);
 	}
+
+	/*void Session::LogHex(const char* title, const void* data, size_t size)
+	{
+		std::cout << title << " (" << size << " bytes): ";
+		const unsigned char* p = static_cast<const unsigned char*>(data);
+		for (size_t i = 0; i < size && i < 32; ++i) {
+			std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)p[i] << " ";
+		}
+		std::cout << std::dec << std::endl;
+	}*/
 
 }

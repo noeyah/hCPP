@@ -43,7 +43,8 @@ public:
 		auto sendBuffer = hlib::MakeSharedPtr<hlib::net::PacketBuffer>(bufferSize);
 		sendBuffer->Write(reinterpret_cast<const std::byte*>(&header), hlib::net::HEADER_SIZE);
 
-		assert(sendPacket.SerializeToArray(sendBuffer->WritePtr(), static_cast<int>(packetSize)));
+		bool success = sendPacket.SerializeToArray(sendBuffer->WritePtr(), static_cast<int>(packetSize));
+		ASSERT_CRASH(success);
 		sendBuffer->CommitWrite(packetSize);
 
 		return sendBuffer;

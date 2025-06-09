@@ -18,7 +18,7 @@ public:
 	}
 
 protected:
-	virtual void OnConnected(uint64_t sid) override;
+	virtual void OnConnected() override;
 	virtual void OnDisconnected() override;
 	virtual void OnReceive(uint16_t packetId, std::span<const std::byte> packet) override;
 

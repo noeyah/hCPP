@@ -6,6 +6,7 @@
 #include <string>
 #include <cstring>
 #include <type_traits>
+#include "WinCommon.h"
 
 namespace hlib::db
 {

@@ -13,7 +13,7 @@ namespace hlib::resource
 		const size_t offset = totalAllocSize - _Bytes;
 
 		void* baseAddress = ::VirtualAlloc(nullptr, totalAllocSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-		assert(baseAddress);
+		ASSERT_CRASH(baseAddress);
 
 		uint8_t* userPtr = static_cast<uint8_t*>(baseAddress) + offset;
 		return static_cast<void*>(userPtr);
@@ -26,6 +26,6 @@ namespace hlib::resource
 
 		void* baseAddress = static_cast<uint8_t*>(_Ptr) - offset;
 		auto ret = ::VirtualFree(baseAddress, 0, MEM_RELEASE);
-		assert(ret != 0);
+		ASSERT_CRASH(ret != 0);
 	}
 }

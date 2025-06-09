@@ -32,7 +32,7 @@ namespace hlib
 
 	void SharedSpinLock::unlock()
 	{
-		assert(IsOwner());
+		ASSERT_CRASH(IsOwner());
 
 		if (--TLS::writeRecursionCount == 0)
 		{
@@ -71,7 +71,7 @@ namespace hlib
 		}
 
 		uint64_t value = flag_.fetch_sub(1);
-		assert((value & READ_COUNT_MASK) > 0);
+		ASSERT_CRASH((value & READ_COUNT_MASK) > 0);
 	}
 
 	bool SharedSpinLock::TryLock()

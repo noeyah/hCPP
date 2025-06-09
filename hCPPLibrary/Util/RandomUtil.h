@@ -29,7 +29,7 @@ namespace hlib
 
 		static int RandomRange(int min, int max)
 		{
-			assert(min < max);
+			ASSERT_CRASH(min < max);
 			std::uniform_int_distribution dis(min, max);
 			return dis(tls_gen_);
 		}
@@ -46,12 +46,12 @@ namespace hlib
 	template<typename T>
 	inline T Random::GetRandomWeight(const std::vector<WeightItem<T>>& items)
 	{
-		assert(!items.empty());
+		ASSERT_CRASH(!items.empty());
 
 		int totalWeight = 0;
 		for (const auto& item : items)
 		{
-			assert(item.weight > 0);
+			ASSERT_CRASH(item.weight > 0);
 			totalWeight += item.weight;
 		}
 

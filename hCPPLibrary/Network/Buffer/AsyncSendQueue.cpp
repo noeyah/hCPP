@@ -50,7 +50,7 @@ namespace hlib::net
 	{
 		std::lock_guard lock(mtx_);
 		
-		assert(sendSize <= queue_.size());
+		ASSERT_CRASH(sendSize <= queue_.size());
 
 		for (size_t i = 0; i < sendSize; i++)
 		{

@@ -8,7 +8,7 @@ namespace hlib::net
 	SessionManager::SessionManager(HANDLE handle, SessionFactory factory)
 		: iocpHandle_(handle), sessionFactory_(std::move(factory))
 	{
-		assert(sessionFactory_);
+		ASSERT_CRASH(sessionFactory_);
 	}
 
 	SessionManager::~SessionManager()

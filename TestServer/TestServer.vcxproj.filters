@@ -68,5 +68,8 @@
     <ClInclude Include="Packet\PacketEnums.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="StringUtil.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

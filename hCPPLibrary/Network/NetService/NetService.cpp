@@ -24,7 +24,7 @@ namespace hlib::net
 
 	bool NetService::Start()
 	{
-		assert(netConfig_.ioThreadCount > 0);
+		ASSERT_CRASH(netConfig_.ioThreadCount > 0);
 
 		if (isRunning_.exchange(true))
 			return false;

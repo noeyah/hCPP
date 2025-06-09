@@ -69,7 +69,7 @@ namespace hlib::net
 		LOG_INFO("listener stop");
 	}
 
-	void Listener::CompletedAsync(IoContext* context, DWORD bytesTransferd)
+	void Listener::CompletedAsync(IoContext* context, DWORD bytesTransferred)
 	{
 		if (context->ioOperation != IoOperation::Accept)
 		{

@@ -10,6 +10,7 @@
 #include <cassert>
 #include "DBConnection.h"
 #include "DBTypes.h"
+#include "Util/Macro.h"
 
 namespace hlib::db
 {
@@ -26,12 +27,12 @@ namespace hlib::db
 		{
 			if (ParamCount > 0)
 			{
-				assert(paramBit_.all());
+				ASSERT_CRASH(paramBit_.all());
 			}
 
 			if (ColumnCount > 0)
 			{
-				assert(columnBit_.all());
+				ASSERT_CRASH(columnBit_.all());
 			}
 
 			return conn_.Execute(query_);
@@ -69,7 +70,7 @@ namespace hlib::db
 	template<typename T>
 	inline DBQuery<ParamCount, ColumnCount>& DBQuery<ParamCount, ColumnCount>::Param(SQLUSMALLINT index, T& value)
 	{
-		assert(index > 0 && index <= ParamCount);
+		ASSERT_CRASH(index > 0 && index <= ParamCount);
 
 		SQLSMALLINT cType = DBTypes<T>::C_TYPE;
 		SQLSMALLINT sqlType = DBTypes<T>::SQL_TYPE;
@@ -121,7 +122,7 @@ namespace hlib::db
 										 ptr,
 										 bufferLen,
 										 &paramInd_[index - 1]);
-		assert(SQL_SUCCEEDED(ret));
+		ASSERT_CRASH(SQL_SUCCEEDED(ret));
 		paramBit_.set(index - 1);
 		return *this;
 	}
@@ -130,7 +131,7 @@ namespace hlib::db
 	template<typename T>
 	inline DBQuery<ParamCount, ColumnCount>& DBQuery<ParamCount, ColumnCount>::ParamNull(SQLUSMALLINT index)
 	{
-		assert(index > 0 && index <= ParamCount);
+		ASSERT_CRASH(index > 0 && index <= ParamCount);
 
 		SQLRETURN ret = SQLBindParameter(conn_.GetStmt(),
 										 index,
@@ -142,7 +143,7 @@ namespace hlib::db
 										 nullptr,
 										 0,
 										 &paramInd_[index - 1]);
-		assert(SQL_SUCCEEDED(ret));
+		ASSERT_CRASH(SQL_SUCCEEDED(ret));
 		paramBit_.set(index - 1);
 		return *this;
 	}

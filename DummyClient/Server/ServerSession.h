@@ -15,9 +15,9 @@ class ServerSession : public hlib::net::Session
 public:
 	ServerSession(PacketDispatcher& dispatcher);
 	
-	uint64_t GetID() const { return sid_; }
+	uint64_t GetID() const { return GetSessionId(); }
 protected:
-	virtual void OnConnected(uint64_t sid) override;
+	virtual void OnConnected() override;
 	virtual void OnDisconnected() override;
 	virtual void OnReceive(uint16_t packetId, std::span<const std::byte> packet) override;
 
@@ -50,6 +50,5 @@ private:
 
 	hlib::Time::steady_time lastSendTime_;
 	std::mutex timeMtx_;
-	uint64_t sid_;
 };
 

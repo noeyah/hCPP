@@ -4,9 +4,9 @@
 #include "Packet/PacketID.h"
 #include "Packet/PacketDispatcher.h"
 
-void ClientSession::OnConnected(uint64_t sid)
+void ClientSession::OnConnected()
 {
-	LOG_DEBUG("client({}) connected", sid);
+	LOG_DEBUG("client({}) connected", GetSessionId());
 }
 
 void ClientSession::OnDisconnected()

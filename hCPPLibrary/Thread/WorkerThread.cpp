@@ -9,7 +9,7 @@ namespace hlib
 		: workFunc_(std::move(workFunc)), 
 		notifyFunc_(std::move(notifyFunc))
 	{
-		assert(workFunc_);
+		ASSERT_CRASH(workFunc_);
 	}
 
 	WorkerThread::~WorkerThread()

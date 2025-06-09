@@ -11,7 +11,7 @@ PacketDispatcher::PacketDispatcher(PacketHandler& handler) : packetHandler_(hand
 void PacketDispatcher::Dispatch(SessionPtr& session, PacketID packetId, std::span<const std::byte> data)
 {
 	auto it = handleMap_.find(packetId);
-	assert(it != handleMap_.end());
+	ASSERT_CRASH(it != handleMap_.end());
 	it->second(session, data);
 }
 

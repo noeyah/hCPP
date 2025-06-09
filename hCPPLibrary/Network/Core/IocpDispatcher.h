@@ -32,7 +32,7 @@ namespace hlib::net
 		void RequestStop();
 		void Work();
 		bool Dispatch();
-		void ProcessIocpSuccess(IoContext* ioContext, DWORD bytesTransferd);
+		void ProcessIocpSuccess(IoContext* ioContext, DWORD bytesTransferred);
 
 	private:
 		HANDLE iocpHandle_;

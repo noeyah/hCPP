@@ -61,12 +61,12 @@ namespace hlib::net
 
 	bool IocpDispatcher::Dispatch()
 	{
-		DWORD bytesTransferd = 0;
+		DWORD bytesTransferred = 0;
 		ULONG_PTR completionKey = NULL;
 		IoContext* ioContext = nullptr;
 
 		auto ret = ::GetQueuedCompletionStatus(iocpHandle_, 
-											   &bytesTransferd, 
+											   &bytesTransferred,
 											   &completionKey, 
 											   reinterpret_cast<LPOVERLAPPED*>(&ioContext), 
 											   INFINITE);
@@ -78,7 +78,7 @@ namespace hlib::net
 				CRASH("GQCS returned error and io context is null - {}", ::WSAGetLastError());
 				return false;
 			}
-			else if (bytesTransferd == 0 && completionKey == 0)
+			else if (bytesTransferred == 0 && completionKey == 0)
 			{
 				// stop 신호 -> loop 종료
 				return false;
@@ -99,7 +99,7 @@ namespace hlib::net
 
 		if (ret)
 		{
-			ProcessIocpSuccess(ioContext, bytesTransferd);
+			ProcessIocpSuccess(ioContext, bytesTransferred);
 		}
 		else
 		{
@@ -110,12 +110,12 @@ namespace hlib::net
 		return true;
 	}
 
-	void IocpDispatcher::ProcessIocpSuccess(IoContext* ioContext, DWORD bytesTransferd)
+	void IocpDispatcher::ProcessIocpSuccess(IoContext* ioContext, DWORD bytesTransferred)
 	{
-		auto jobLambda = [ioContext, bytesTransferd]() mutable {
+		auto jobLambda = [ioContext, bytesTransferred]() mutable {
 			if (ioContext && ioContext->ioHandler)
 			{
-				ioContext->ioHandler->CompletedAsync(ioContext, bytesTransferd);
+				ioContext->ioHandler->CompletedAsync(ioContext, bytesTransferred);
 			}
 		};
 

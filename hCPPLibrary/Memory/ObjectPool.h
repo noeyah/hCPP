@@ -61,7 +61,7 @@ namespace hlib
 			if (!objPtr)
 			{
 				objPtr = CreateNew();
-				assert(objPtr);
+				ASSERT_CRASH(objPtr);
 
 				Lock lock(spin_);
 				all_.push_back(objPtr);
@@ -108,7 +108,7 @@ namespace hlib
 
 		void Return(T* objPtr)
 		{
-			assert(objPtr);
+			ASSERT_CRASH(objPtr);
 
 			Lock lock(spin_);
 			pool_.push_back(objPtr);

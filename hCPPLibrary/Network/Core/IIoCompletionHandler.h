@@ -9,7 +9,7 @@ namespace hlib::net
 	public:
 		virtual ~IIoCompletionHandler() = default;
 
-		virtual void CompletedAsync(IoContext* context, DWORD bytesTransferd) = 0;
+		virtual void CompletedAsync(IoContext* context, DWORD bytesTransferred) = 0;
 		virtual void ErrorHandler(IoContext* context, int32_t wsaErrorCode) = 0;
 	};
 }

@@ -65,11 +65,13 @@ namespace hlib::net
 		SessionId GetSessionId() const { return sessionId_; }
 		bool IsConnected() const { return state_.load() == State::State_Connected; }
 
+#ifdef _DEBUG
 		static void Print();
+#endif // _DEBUG
 
 	protected:
 		// 사용자 정의 필요
-		virtual void OnConnected(uint64_t sessionId) = 0;
+		virtual void OnConnected() = 0;
 		virtual void OnDisconnected() = 0;
 		virtual void OnReceive(uint16_t packetId, std::span<const std::byte> packet) = 0;
 
@@ -81,10 +83,10 @@ namespace hlib::net
 		void DisconnectCompleted();
 
 		void RecvAsync();
-		void RecvCompleted(DWORD bytesTransferd);
+		void RecvCompleted(DWORD bytesTransferred);
 
 		void SendAsync();
-		void SendCompleted(DWORD bytesTransferd);
+		void SendCompleted(DWORD bytesTransferred);
 
 	private:
 		bool SetConnectSockopt();
@@ -117,9 +119,10 @@ namespace hlib::net
 		std::atomic_bool isSending_ = false;
 		std::mutex sendMtx_;
 
-		// debug
+#ifdef _DEBUG
 		inline static std::atomic_uint64_t constructionCnt_ = 0;
 		inline static std::atomic_uint64_t destructionCnt_ = 0;
+#endif // _DEBUG
 	};
 
 }
