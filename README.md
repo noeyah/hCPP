@@ -3,7 +3,7 @@
 ## ✨ 개요
 
 이 프로젝트는 서버 개발을 위한 C++ 라이브러리(네트워크, 태스트, 메모리, DB 등)와 C# 라이브러리(네트워크)를 직접 설계 및 구현합니다. 
-C++ 라이브러리는 Google Test 유닛 테스트를 사용하여 기능을 검증합니다.
+C++ 라이브러리는 Google Test를 통해 유닛 테스트를 수행하여 안정성을 확보하고자 했습니다. 
 이 라이브러리들의 네트워크 통신 검증 및 예제를 위해 테스트 서버 및 다양한 테스트 클라이언트를 포함합니다. 
 
 ### 💻 개발 환경
@@ -22,8 +22,8 @@ C++ 라이브러리는 Google Test 유닛 테스트를 사용하여 기능을 �
 - [google test](https://github.com/google/googletest)
 - [Protobuf 5.29.3](https://github.com/protocolbuffers/protobuf)
 - Python 3.13.3
-	- Protobuf 라이브러리 설치 : pip install protobuf
 	- Jinja2 라이브러리 설치 : pip install Jinja2
+	- Protobuf 라이브러리 설치 : pip install protobuf
 
 ### 🌞 빌드 방법
 
@@ -48,44 +48,33 @@ git clone https://github.com/noeyah/hCPP.git
 	- 빌드된 파일을 실행합니다.
 
 ## 📚 프로젝트 구성
-- hCPPLibrary : 서버 개발을 위한 핵심 컴포넌트 모음. 다른 프로젝트에서 이 라이브러리를 참조하여 서버 및 클라이언트 기능을 구현합니다.
-- hCSharpLibrary : C# 환경을 위한 비동기 네트워크 라이브러리.
-- GTest : hCPPLibrary 모듈의 검증을 위한 유닛 테스트.
-- Packet : 패킷 저장소. Python 스크립트로 proto 파일에서 정의한 메시지를 추출하여 PacketID, 패킷 매핑, Enum 문자열 변환 등 C++, C# 코드를 생성합니다.
-- TestServer : C++ 네트워크 라이브러리 기능 검증을 위한 서버.
-- DummyClient : C++ 네트워크 라이브러리 기능 검증을 위한 클라이언트.
-- TestCLient : C# 네트워크 라이브러리 기능 검증을 위한 클라이언트. 채팅 UI를 제공합니다.
-
 ```
 hCPP
+├─DummyClient (C++ 라이브러리 테스트용 클라이언트)
+├─GTest (C++ 라이브러리 유닛 테스트)
 ├─hCPPLibrary (⭐C++ 라이브러리)
+│  ├─Command
+│  ├─DB
+│  ├─Lock
+│  ├─Log
+│  ├─Memory
 │  ├─Network
 │  ├─Task
-│  ├─Lock
-│  ├─DB
-│  ├─Memory
 │  ├─Thread
-│  ├─Log
-│  ├─Command
 │  └─Util
 ├─hCSharpLibrary (C# 라이브러리)
 │  └─Network
-├─GTest (C++ 라이브러리 유닛 테스트)
 ├─Packet (C++)
 │  ├─cpp
 │  ├─csharp
 │  ├─jinja2
 │  └─proto
-├─TestServer (C++ 라이브러리 테스트용 서버)
-├─DummyClient (C++ 라이브러리 테스트용 클라이언트)
-└─TestClient (C# 라이브러리 테스트용 클라이언트 - WinForm)
+├─TestClient (C# 라이브러리 테스트용 클라이언트 - WinForm)
+└─TestServer (C++ 라이브러리 테스트용 서버)
 ```
 
-### 프로젝트 : hCPPLibrary
+### hCPPLibrary (C++ 라이브러리)
 
-서버 개발을 위한 핵심 컴포넌트 모음. 다른 프로젝트에서 이 라이브러리를 참조하여 서버 및 클라이언트 기능을 구현합니다.
-
-#### 주요 기능
 - Network : IOCP 기반 비동기 네트워크 및 서비스 인터페이스 제공
 - Task : 비동기 작업 처리를 위한 잡큐 및 스레드풀, 스케줄러 제공
 - Lock : 스핀락, 공유 스핀락 등 동시성 처리 지원
@@ -96,32 +85,22 @@ hCPP
 - 그 외 Command, Util : 보조 유틸리티
 
 
-### 프로젝트 : GTest
+### GTest
 
-hCPPLibrary 모듈의 검증을 위한 유닛 테스트.
-
-#### 실행 화면
+- 실행 화면
 
 ![GTest](https://github.com/user-attachments/assets/6a9370b3-fb66-44b4-9bce-a2f8ec7d875d)
 
 
-### 프로젝트 : TestServer, DummyClient
+### 테스트용 프로젝트
+- TestServer, TestClient, DummyClient
 
-C++ 네트워크 라이브러리 기능 검증을 위한 서버 및 클라이언트.
 
 
-### 프로젝트 : TestClient
-
-C# 네트워크 라이브러리 기능 검증을 위한 클라이언트. 채팅 UI를 제공합니다.
-
-#### 실행 화면
+- TestClient 실행 화면
 
 ![TestClient](https://github.com/user-attachments/assets/0cf0df3b-1b1c-4669-908f-87338a02eb75)
 
-### 프로젝트 : Packet
-
-- 패킷 저장소. 
-- Python 스크립트로 proto 파일에서 정의한 메시지를 추출하여 PacketID, 패킷 매핑, Enum 문자열 변환 등 C++, C# 코드를 생성합니다.
 
 
 ## 참고 자료 및 출처

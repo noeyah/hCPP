@@ -18,7 +18,7 @@ int main()
 	config.name = "dummy client";
 	config.ip = "127.0.0.1";
 	config.port = 7777;
-	config.connectCount = 1;
+	config.connectCount = 200;
 
 	Server server(config);
 	server.Start();
