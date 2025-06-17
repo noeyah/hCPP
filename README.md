@@ -39,9 +39,15 @@ git clone https://github.com/noeyah/hCPP.git
 		- GTest 프로젝트에 gtest-all.cc 파일을 직접 추가하여 함께 컴파일합니다.
 	- 프로젝트 간 참조 설정
 		- 다음 프로젝트 참조가 올바르게 설정되어 있는지 확인합니다.
-		- TestServer : hCPPLibrary(C++라이브러리), Packet 프로젝트 참조, Packet 프로젝트의 cpp 폴더 포함
-		- DummyClient : hCPPLibrary(C++라이브러리), Packet 프로젝트 참조, Packet 프로젝트의 cpp 폴더 포함
-		- TestClient : hCSharpLibrary(C#라이브러리), Packet 프로젝트의 csharp 폴더 내 cs 파일 포함
+		- TestServer
+			- hCPPLibrary(C++라이브러리), Packet 프로젝트 참조
+			- hCPPLibrary, Packet\cpp 폴더 경로 추가 포함 디렉터리에 추가
+		- DummyClient
+			- hCPPLibrary(C++라이브러리), Packet 프로젝트 참조
+			- hCPPLibrary, Packet\cpp 폴더 경로 추가 포함 디렉터리에 추가
+		- TestClient
+			- hCSharpLibrary(C#라이브러리) 프로젝트 참조
+			- Packet\csharp 폴더 내 cs 파일 : 추가 → 기존 항목 → 링크로 추가
 3. Visual Studio 솔루션 빌드
 	- hCPP.sln 파일을 Visual Studio 2022로 엽니다.
 	- 솔루션 빌드를 진행합니다.
