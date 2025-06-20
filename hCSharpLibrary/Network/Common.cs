@@ -9,7 +9,7 @@ public class NetworkDefine
 	public static readonly int HEADER_SIZE = Unsafe.SizeOf<PacketHeader>();
 }
 
-[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 4)] // ?????
+[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 4)]
 public struct PacketHeader
 {
 	public ushort Size;

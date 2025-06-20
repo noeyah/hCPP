@@ -35,7 +35,7 @@ internal class SessionManager
 
 	public void CloseAll()
 	{
-		var sessions = _dicSession.Values.ToList();
+		var sessions = _dicSession.Values;
 
 		if (!sessions.Any())
 		{

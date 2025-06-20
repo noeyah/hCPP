@@ -3,8 +3,8 @@ namespace hCSharpLibrary.Network;
 
 public class NetClient : NetService
 {
-	private Connector _connector = new();
-	private NetClientConfig _config;
+	private readonly Connector _connector = new();
+	private readonly NetClientConfig _config;
 
 	public NetClient(NetClientConfig config) : base(config.ConnectCount * 2)
 	{

@@ -3,8 +3,8 @@ namespace hCSharpLibrary.Network;
 
 public class NetServer : NetService
 {
-	private Listener _listener = new();
-	private NetServerConfig _config;
+	private readonly Listener _listener = new();
+	private readonly NetServerConfig _config;
 
 
 	public NetServer(NetServerConfig config) : base(config.SAEAPoolingCount)

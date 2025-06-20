@@ -14,9 +14,9 @@ public abstract class NetService
 	public event SessionCallback? SessionDisconnected;
 	public event ReceiveCallback? SessionReceived;
 
-	private SocketAsyncEventArgsPool _saeaPool;
-	private MemoryPool<byte> _memoryPool = MemoryPool<byte>.Shared;
-	private SessionManager _sessionManager = new();
+	private readonly SocketAsyncEventArgsPool _saeaPool;
+	private readonly MemoryPool<byte> _memoryPool = MemoryPool<byte>.Shared;
+	private readonly SessionManager _sessionManager = new();
 
 	public NetService(int saeaPoolingCount)
 	{
