@@ -57,7 +57,7 @@ git clone https://github.com/noeyah/hCPP.git
 
 ```
 hCPP
-├─hCPPLibrary (⭐C++ 라이브러리)
+├─hCPPLibrary (C++ 라이브러리)
 │  ├─Network
 │  ├─Task
 │  ├─Lock
