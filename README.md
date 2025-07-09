@@ -1,4 +1,4 @@
-﻿# hCPP
+﻿# C++/C# 프로젝트
 
 ## ✨ 개요
 
@@ -82,7 +82,7 @@ hCPP
 
 ### 프로젝트 : hCPPLibrary
 
-서버 개발을 위한 핵심 컴포넌트 모음. 다른 프로젝트에서 이 라이브러리를 참조하여 서버 및 클라이언트 기능을 구현합니다.
+C++ 서버 개발을 위한 핵심 컴포넌트 모음. 다른 프로젝트에서 이 라이브러리를 참조하여 서버 및 클라이언트 기능을 구현합니다.
 
 #### 주요 기능
 - Network : IOCP 기반 비동기 네트워크 및 서비스 인터페이스 제공
@@ -93,6 +93,12 @@ hCPP
 - Thread : 스레드 관리 지원
 - Log : 파일 및 콘솔 출력 로그 시스템 제공
 - 그 외 Command, Util : 보조 유틸리티
+
+![hCPPLibrary](https://github.com/user-attachments/assets/80a93407-3101-47a4-8fd1-0e46addc3e65)
+
+#### 네트워크 구조
+<img width="741" height="479" alt="Image" src="https://github.com/user-attachments/assets/e0c2c91c-28f9-46bc-8d75-40086d178cbb" />
+
 
 ### 프로젝트 : hCSharpLibrary
 
