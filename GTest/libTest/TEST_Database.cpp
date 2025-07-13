@@ -6,7 +6,10 @@
 #include <DB/DBConnection.h>
 #include <DB/DBConnectionPool.h>
 
+// db 설정 때문에 주석 처리!
+// 필요하면 db 입력 후 사용
 
+/*
 class DatabaseTest : public ::testing::Test
 {
 protected:
@@ -14,6 +17,7 @@ protected:
 
 	void SetUp() override
 	{
+		// db 정보 입력 필요!
 		pool_.Connect(5, L"Driver={ODBC Driver 18 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=ServerDB;Trusted_Connection=yes;");
 	}
 
@@ -100,3 +104,4 @@ TEST_F(DatabaseTest, Select)
 	}
 }
 
+*/
