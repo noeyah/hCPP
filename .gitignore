@@ -366,5 +366,4 @@ FodyWeavers.xsd
 
 
 # 예외처리
-!include/protobuf/debug/
-!include/protobuf/release/
+!include/protobuf/
