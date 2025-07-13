@@ -363,3 +363,8 @@ MigrationBackup/
 FodyWeavers.xsd
 /Packet/packet.desc
 /Packet/packet.desc
+
+
+# 예외처리
+!include/debug/
+!include/release/
