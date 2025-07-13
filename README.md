@@ -19,9 +19,8 @@ C++ 라이브러리는 Google Test 유닛 테스트를 사용하여 기능을 �
 ## ⚙ 빌드 가이드
 
 ### 🔨 외부 라이브러리/툴
-- [google test](https://github.com/google/googletest)
-- [Protobuf 5.29.3](https://github.com/protocolbuffers/protobuf)
 - Python 3.13.3
+	- 새로운 패킷 파일 생성(generate_packet.py)하려면 라이브러리 설치 필요
 	- Protobuf 라이브러리 설치 : pip install protobuf
 	- Jinja2 라이브러리 설치 : pip install Jinja2
 
@@ -226,6 +225,8 @@ protected:
 ```
 
 ## 참고 자료 및 출처
+- [google test](https://github.com/google/googletest)
+- [Protobuf 5.29.3](https://github.com/protocolbuffers/protobuf)
 - MSDN
 - 인프런 강의 : Rookiss님의 C++ 프로그래밍 입문 / 게임 서버
 - https://tango1202.github.io/categories/cpp-stl/
