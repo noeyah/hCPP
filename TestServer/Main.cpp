@@ -5,6 +5,7 @@
 #include "Packet/PacketRegister.h"
 #include "MainServer.h"
 #include <Network/Connection/Session.h>
+#include <Memory/Config.h>
 
 int main()
 {
@@ -33,10 +34,14 @@ int main()
 							   });
 
 #ifdef _DEBUG
-	cmdService.RegisterCommand("memory", "if memory mode is log, show alloc info",
-							   [](const hlib::cmd::CommandArgs& args) {
-								   hlib::Memory::Instance().Print();
-							   });
+
+	if (hlib::MEMORY_RESOURCE_MODE == hlib::MemoryMode::Log)
+	{
+		cmdService.RegisterCommand("memory", "if memory mode is log, show alloc info",
+								   [](const hlib::cmd::CommandArgs& args) {
+									   hlib::Memory::Instance().Print();
+								   });
+	}
 
 	cmdService.RegisterCommand("session", "show session count",
 							   [](const hlib::cmd::CommandArgs& args) {

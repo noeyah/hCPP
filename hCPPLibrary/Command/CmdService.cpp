@@ -16,6 +16,9 @@ namespace hlib::cmd
 
 	void CmdService::Run()
 	{
+		CommandArgs args;
+		Command_Help(args);
+
 		thread_.StartAsCurrentThread();
 	}
 
