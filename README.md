@@ -23,6 +23,9 @@ C++ 라이브러리는 Google Test 유닛 테스트를 사용하여 기능을 �
 	- 새로운 패킷 파일 생성(generate_packet.py)하려면 라이브러리 설치 필요
 	- Protobuf 라이브러리 설치 : pip install protobuf
 	- Jinja2 라이브러리 설치 : pip install Jinja2
+- 빠른 테스트를 위해 외부 라이브러리([google test](https://github.com/google/googletest), [Protobuf](https://github.com/protocolbuffers/protobuf))를 include 폴더에 추가했습니다.
+
+
 
 ### 🌞 빌드 방법
 
