@@ -367,3 +367,4 @@ FodyWeavers.xsd
 
 # 예외처리
 !include/protobuf/
+!include/protobuf/**
