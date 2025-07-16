@@ -2,9 +2,17 @@
 
 ## ✨ 개요
 
-이 프로젝트는 서버 개발을 위한 C++ 라이브러리(네트워크, 태스트, 메모리, DB 등)와 C# 라이브러리(네트워크)를 직접 설계 및 구현합니다. 
+이 프로젝트는 서버 개발에 필요한 다양한 핵심 라이브러리(네트워크, DB, 태스트 등)을 직접 설계 및 구현합니다.
 C++ 라이브러리는 Google Test 유닛 테스트를 사용하여 기능을 검증합니다.
 이 라이브러리들의 네트워크 통신 검증 및 예제를 위해 테스트 서버 및 다양한 테스트 클라이언트를 포함합니다. 
+
+### 📌 주요 기능
+- IOCP 기반 비동기 네트워크 서비스
+- 데이터베이스 연결 및 쿼리 실행 라이브러리(ODBC)
+- 비동기 병렬 처리 시스템
+- Google Test를 활용한 유닛 테스트
+- Protobuf를 이용한 패킷 시스템과 코드 생성 자동화(Python)
+- C++ 채팅 서버 및 C# WinForm 클라이언트
 
 ### 💻 개발 환경
 - OS : Windows 10
@@ -19,12 +27,14 @@ C++ 라이브러리는 Google Test 유닛 테스트를 사용하여 기능을 �
 ## ⚙ 빌드 가이드
 
 ### 🔨 외부 라이브러리/툴
-- Python 3.13.3
-	- 새로운 패킷 파일 생성(generate_packet.py)하려면 라이브러리 설치 필요
-	- Protobuf 라이브러리 설치 : pip install protobuf
-	- Jinja2 라이브러리 설치 : pip install Jinja2
-- 빠른 테스트를 위해 외부 라이브러리([google test](https://github.com/google/googletest), [Protobuf](https://github.com/protocolbuffers/protobuf))를 include 폴더에 추가했습니다.
-
+- TestServer/TestClient 프로젝트
+	- [Protobuf 5.29.3](https://github.com/protocolbuffers/protobuf) 버전을 사용합니다.
+- 패킷 스크립트 생성
+	- 패킷 스크립트 자동 생성(generate_packet.py)은 Python 3.13.3 버전을 사용합니다.
+	- `pip install protobuf`명령으로 Protobuf 라이브러리를 설치가 필요합니다.
+	- `pip install Jinja2`명령으로 Jinja2 라이브러리를 설치가 필요합니다.
+- GTest 프로젝트
+	- [google test](https://github.com/google/googletest)를 사용합니다.
 
 
 ### 🌞 빌드 방법
@@ -33,27 +43,13 @@ C++ 라이브러리는 Google Test 유닛 테스트를 사용하여 기능을 �
 ```
 git clone https://github.com/noeyah/hCPP.git
 ```
-2. 외부 라이브러리 및 프로젝트 참조 설정
-	- 본 프로젝트를 빌드하고 실행하기 위해서는 다음과 같은 외부 라이브러리 설정 및 프로젝트 참조가 필요합니다.
-	- Protobuf
-		- Packet 프로젝트에서 Protobuf 사용 준비가 되어야 합니다.
-	- Google Test
-		- GTest 프로젝트에 gtest-all.cc 파일을 직접 추가하여 함께 컴파일합니다.
-	- 프로젝트 간 참조 설정
-		- 다음 프로젝트 참조가 올바르게 설정되어 있는지 확인합니다.
-		- TestServer
-			- hCPPLibrary(C++라이브러리), Packet 프로젝트 참조
-			- hCPPLibrary, Packet\cpp 폴더 경로 추가 포함 디렉터리에 추가
-		- DummyClient
-			- hCPPLibrary(C++라이브러리), Packet 프로젝트 참조
-			- hCPPLibrary, Packet\cpp 폴더 경로 추가 포함 디렉터리에 추가
-		- TestClient
-			- hCSharpLibrary(C#라이브러리) 프로젝트 참조
-			- Packet\csharp 폴더 내 cs 파일 : 추가 → 기존 항목 → 링크로 추가
+2. Visual Studio에서 프로젝트 열기
+	- 폴더 안에 있는 `hCPP.sln` 솔루션 파일을 엽니다.
+	
 3. Visual Studio 솔루션 빌드
-	- hCPP.sln 파일을 Visual Studio 2022로 엽니다.
-	- 솔루션 빌드를 진행합니다.
-	- 빌드된 파일을 실행합니다.
+	- `GTest` or `TestServer`+`TestClient` 등의 프로젝트를 시작 프로젝트로 설정합니다.
+	- 빌드하고 실행합니다.
+
 
 ## 📚 프로젝트 구성
 
@@ -61,9 +57,9 @@ git clone https://github.com/noeyah/hCPP.git
 hCPP
 ├─hCPPLibrary (C++ 라이브러리)
 │  ├─Network
+│  ├─DB
 │  ├─Task
 │  ├─Lock
-│  ├─DB
 │  ├─Memory
 │  ├─Thread
 │  ├─Log
@@ -233,7 +229,6 @@ protected:
 - MSDN
 - 인프런 강의 : Rookiss님의 C++ 프로그래밍 입문 / 게임 서버
 - https://tango1202.github.io/categories/cpp-stl/
-- ssanta님의 포트폴리오
 - 모두의 코드 C++
 - [ReaderWriterLockSlim.cs](https://github.com/microsoft/referencesource/blob/master/System.Core/System/threading/ReaderWriterLockSlim/ReaderWriterLockSlim.cs)
 - https://github.com/zeliard/Dispatcher
