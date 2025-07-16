@@ -29,10 +29,9 @@ C++ 라이브러리는 Google Test 유닛 테스트를 사용하여 기능을 �
 ### 🔨 외부 라이브러리/툴
 - TestServer/TestClient 프로젝트
 	- [Protobuf 5.29.3](https://github.com/protocolbuffers/protobuf) 버전을 사용합니다.
-- 패킷 스크립트 생성
+- 패킷 스크립트 자동 생성
 	- 패킷 스크립트 자동 생성(generate_packet.py)은 Python 3.13.3 버전을 사용합니다.
-	- `pip install protobuf`명령으로 Protobuf 라이브러리를 설치가 필요합니다.
-	- `pip install Jinja2`명령으로 Jinja2 라이브러리를 설치가 필요합니다.
+	- Protobuf, Jinja2 라이브러리를 사용합니다.
 - GTest 프로젝트
 	- [google test](https://github.com/google/googletest)를 사용합니다.
 
