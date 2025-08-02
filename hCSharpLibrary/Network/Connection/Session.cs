@@ -13,7 +13,7 @@ internal class Session : ISession, IDisposable
 	internal event ReceiveCallback? OnReceivedCallback;
 
 	private readonly long _sessionId;
-	private readonly Socket _socket;
+	private Socket _socket;
 
 	private readonly DateTime _startTime;
 
