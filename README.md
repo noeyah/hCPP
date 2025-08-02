@@ -1,15 +1,15 @@
-﻿# C++/C# 프로젝트
+﻿# C++/C# Portfolio
 
-## ✨ 개요
+## ✨ 프로젝트 개요
 
-이 프로젝트는 서버 개발에 필요한 다양한 핵심 라이브러리(네트워크, DB, 태스트 등)을 직접 설계 및 구현합니다.
-C++ 라이브러리는 Google Test 유닛 테스트를 사용하여 기능을 검증합니다.
-이 라이브러리들의 네트워크 통신 검증 및 예제를 위해 테스트 서버 및 다양한 테스트 클라이언트를 포함합니다. 
+- 이 프로젝트는 서버 개발에 필요한 다양한 핵심 라이브러리(네트워크, DB, 태스트 등)을 직접 설계 및 구현합니다.
+- C++ 라이브러리는 Google Test 유닛 테스트를 사용하여 기능을 검증합니다.
+- 라이브러리들의 네트워크 통신 검증 및 예제를 위해 테스트 서버 및 테스트 클라이언트를 포함합니다. 
 
 ### 📌 주요 기능
 - IOCP 기반 비동기 네트워크 서비스
-- 데이터베이스 연결 및 쿼리 실행 라이브러리(ODBC)
 - 비동기 병렬 처리 시스템
+- 데이터베이스 연결 및 쿼리 실행 라이브러리(ODBC)
 - Google Test를 활용한 유닛 테스트
 - Protobuf를 이용한 패킷 시스템과 코드 생성 자동화(Python)
 - C++ 채팅 서버 및 C# WinForm 클라이언트
@@ -30,7 +30,7 @@ C++ 라이브러리는 Google Test 유닛 테스트를 사용하여 기능을 �
 - TestServer/TestClient 프로젝트
 	- [Protobuf 5.29.3](https://github.com/protocolbuffers/protobuf) 버전을 사용합니다.
 - 패킷 스크립트 자동 생성
-	- 패킷 스크립트 자동 생성(generate_packet.py)은 Python 3.13.3 버전을 사용합니다.
+	- 스크립트는 Python 3.13.3 버전을 사용합니다.
 	- Protobuf, Jinja2 라이브러리를 사용합니다.
 - GTest 프로젝트
 	- [google test](https://github.com/google/googletest)를 사용합니다.
@@ -46,7 +46,7 @@ git clone https://github.com/noeyah/hCPP.git
 	- 폴더 안에 있는 `hCPP.sln` 솔루션 파일을 엽니다.
 	
 3. Visual Studio 솔루션 빌드
-	- `GTest` or `TestServer`+`TestClient` 등의 프로젝트를 시작 프로젝트로 설정합니다.
+	- `TestServer`+`TestClient` 프로젝트를 시작 프로젝트로 설정합니다.
 	- 빌드하고 실행합니다.
 
 
