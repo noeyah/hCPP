@@ -6,7 +6,7 @@
 
 void ClientSession::OnConnected()
 {
-	LOG_DEBUG("client({}) connected", GetSessionId());
+	LOG_DEBUG("session({}) connected", GetSessionId());
 }
 
 void ClientSession::OnDisconnected()

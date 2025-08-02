@@ -131,7 +131,7 @@ void PacketHandler::OnReceivePacket(std::shared_ptr<ClientSession>& session, con
 		return;
 	}
 
-	//LOG_DEBUG("Session({}) : Chat ...", session->GetSessionId());
+	LOG_DEBUG("Session({}) : Chat ...", session->GetSessionId());
 	//LOG_DEBUG("Session({}) : \"{}\"", session->GetSessionId(), desc);
 	res.set_errorcode(ErrorCode::OK);
 	res.set_desc(desc);
