@@ -49,6 +49,9 @@ git clone https://github.com/noeyah/hCPP.git
 	- `TestServer`+`TestClient` 프로젝트를 시작 프로젝트로 설정합니다.
 	- 빌드하고 실행합니다.
 
+### 🎀 실행 화면
+![testClient_chat](https://github.com/user-attachments/assets/2fca5037-edae-4300-84ae-6036565e44b4)
+
 
 ## 📚 프로젝트 구성
 
