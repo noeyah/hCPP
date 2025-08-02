@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net;
 using System.Net.Sockets;
-using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 
 namespace hCSharpLibrary.Network;
@@ -15,14 +12,13 @@ internal class Session : ISession, IDisposable
 	internal event SessionCallback? OnCloseCallback;
 	internal event ReceiveCallback? OnReceivedCallback;
 
-	private long _sessionId;
-	private Socket _socket;
+	private readonly long _sessionId;
+	private readonly Socket _socket;
 
-	private DateTime _startTime;
-	private IPEndPoint _endPoint;
+	private readonly DateTime _startTime;
 
-	private MemoryPool<byte> _bufferPool;
-	private SocketAsyncEventArgsPool _saeaPool;
+	private readonly MemoryPool<byte> _memoryPool = MemoryPool<byte>.Shared;
+	private readonly SocketAsyncEventArgsPool _saeaPool;
 
 	// recv
 	private SocketAsyncEventArgs _recvArgs;
@@ -39,22 +35,14 @@ internal class Session : ISession, IDisposable
 
 	const int MAX_SEND_BUFFER_COUNT = 5;
 
-
 	public long SessionID => _sessionId;
-	public IPEndPoint EndPoint => _endPoint;
 
-
-	public Session(long sessionId, Socket socket, MemoryPool<byte> bufferPool, SocketAsyncEventArgsPool saeaPool)
+	public Session(long sessionId, Socket socket, SocketAsyncEventArgsPool saeaPool)
 	{
 		_sessionId = sessionId;
 		_socket = socket;
-		_bufferPool = bufferPool;
 		_startTime = DateTime.Now;
 		_bufferReader = new(NetworkDefine.MAX_BUFFER_SIZE);
-
-		var endPoint = _socket.RemoteEndPoint as IPEndPoint;
-		_endPoint = endPoint!;
-
 		_saeaPool = saeaPool;
 
 		_recvArgs = _saeaPool.Get();
@@ -68,7 +56,7 @@ internal class Session : ISession, IDisposable
 
 	public void Start()
 	{
-		var owner = _bufferPool.Rent(NetworkDefine.MAX_BUFFER_SIZE);
+		var owner = _memoryPool.Rent(NetworkDefine.MAX_BUFFER_SIZE);
 		_recvArgs.UserToken = owner;
 		PostRecv(_recvArgs);
 	}
@@ -82,7 +70,7 @@ internal class Session : ISession, IDisposable
 			return;
 		}
 
-		var sendBuffer = new SendBuffer(data, _bufferPool);
+		var sendBuffer = new SendBuffer(data, _memoryPool);
 		Send(sendBuffer);
 	}
 

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Buffers;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 
 namespace hCSharpLibrary.Network;
 
@@ -15,10 +13,9 @@ public abstract class NetService
 	public event ReceiveCallback? SessionReceived;
 
 	private readonly SocketAsyncEventArgsPool _saeaPool;
-	private readonly MemoryPool<byte> _memoryPool = MemoryPool<byte>.Shared;
 	private readonly SessionManager _sessionManager = new();
 
-	public NetService(int saeaPoolingCount)
+	protected NetService(int saeaPoolingCount)
 	{
 		_saeaPool = new SocketAsyncEventArgsPool(saeaPoolingCount);
 	}
@@ -37,7 +34,7 @@ public abstract class NetService
 	internal void OnConnectNewSession(Socket socket)
 	{
 		var sessionId = _sessionManager.GenerateSessionId();
-		var newSession = new Session(sessionId, socket, _memoryPool, _saeaPool);
+		var newSession = new Session(sessionId, socket, _saeaPool);
 		
 		newSession.OnCloseCallback += OnCloseSession;
 		newSession.OnReceivedCallback += SessionReceived;
