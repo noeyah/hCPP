@@ -56,10 +56,7 @@ public partial class WinLobby : Form
 	{
 		if (res.ErrorCode != ErrorCode.Ok)
 		{
-			this.DrawUI(() =>
-			{
-				MessageBox.Show($"{res.ErrorCode}", "서버 에러");
-			});
+			this.ShowMsgBox($"{res.ErrorCode}", "서버 에러");
 			return;
 		}
 

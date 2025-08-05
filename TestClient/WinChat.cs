@@ -3,8 +3,10 @@ using hCSharpLibrary.Network;
 using Packet;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Header;
 
 namespace TestClient;
 
@@ -13,28 +15,81 @@ public partial class WinChat : Form
 	public event Action? OpenWinLobby;
 	private Network _network;
 
-	private ConcurrentDictionary<ulong, string> _players = new();
+	private ConcurrentDictionary<ulong, User> _dicUser = new();
+	private ConcurrentQueue<ChatEvent> _eventQueue = new();
+	private int _isEventUpdate = 0;
 
-	private ConcurrentQueue<Control> _controls = new();
-	private readonly System.Windows.Forms.Timer _timer;
-	private const int MAX_BUBBLE_COUNT = 200;
+	private readonly Font _font;
+	private readonly Padding _bubblePadding = new Padding(12, 10, 12, 10);
+	private const int ITEM_VERTICA_MARGIN = 5;
+	private const int MAX_BUBBLE_WIDTH = 300;
 
 	public WinChat(Network network)
 	{
 		_network = network;
 		_network.NetReceivedCallback += OnReceived;
+
+		_font = new Font("맑은 고딕", 9);
 		InitializeComponent();
-		flowLayoutPanel_main.HorizontalScroll.Enabled = false;
-		flowLayoutPanel_main.HorizontalScroll.Visible = false;
-		flowLayoutPanel_players.HorizontalScroll.Enabled = false;
-		flowLayoutPanel_players.HorizontalScroll.Visible = false;
 
-		AddSystemMsg("입장했습니다.");
+		listBox_chat.DrawMode = DrawMode.OwnerDrawVariable;
+		listBox_chat.MeasureItem += ListBoxChat_MeasureItem;
+		listBox_chat.DrawItem += ListBoxChat_DrawItem;
 
-		_timer = new System.Windows.Forms.Timer();
-		_timer.Interval = 200;
-		_timer.Tick += UpdateBubble;
-		_timer.Start();
+		listBox_user.DrawMode = DrawMode.OwnerDrawFixed;
+		listBox_user.ItemHeight = 70;
+		listBox_user.DrawItem += ListBoxUser_DrawItem;
+
+		SelfJoinEvent selfEvent = new SelfJoinEvent();
+		listBox_chat.Items.Add(selfEvent);
+	}
+
+	public void InitUsers(List<(ulong, string)> list)
+	{
+		var users = list.Select(v => new User(v.Item1, v.Item2));
+
+		_dicUser.Clear();
+		foreach (var user in users)
+		{
+			_dicUser.TryAdd(user.uid, user);
+		}
+
+		listBox_user.SuspendLayout();
+
+		listBox_user.Items.Clear();
+		listBox_user.Items.AddRange(_dicUser.Values.ToArray());
+
+		listBox_user.ResumeLayout();
+	}
+
+	private void PushChatEvent(ChatEvent chatEvent)
+	{
+		_eventQueue.Enqueue(chatEvent);
+
+		if (Interlocked.CompareExchange(ref _isEventUpdate, 1, 0) == 0)
+		{
+			this.BeginInvoke(ProcessChatEvent);
+		}
+	}
+
+	private void ProcessChatEvent()
+	{
+		while (_eventQueue.TryDequeue(out ChatEvent? chatEvent))
+		{
+			listBox_chat.Items.Add(chatEvent);
+		}
+
+		listBox_chat.TopIndex = listBox_chat.Items.Count - 1;
+
+		Interlocked.Exchange(ref _isEventUpdate, 0);
+
+		if (!_eventQueue.IsEmpty)
+		{
+			if (Interlocked.CompareExchange(ref _isEventUpdate, 1, 0) == 0)
+			{
+				this.BeginInvoke(ProcessChatEvent);
+			}
+		}
 	}
 
 	#region events
@@ -64,112 +119,217 @@ public partial class WinChat : Form
 		LeaveRoomReq req = new LeaveRoomReq();
 		_network.Send(req);
 	}
-	#endregion
 
-	#region ui
 
-	public void SetPlayers(List<(ulong, string)> list)
+	private void ListBoxChat_MeasureItem(object? sender, MeasureItemEventArgs e)
 	{
-		List<Portrait> portraits = new();
+		if (e.Index < 0)
+			return;
 
-		flowLayoutPanel_players.SuspendLayout();
+		ChatEvent chatEvent = (ChatEvent)listBox_chat.Items[e.Index];
 
-		foreach (var (id, name) in list)
+		int contentHeight = 0;
+
+		switch (chatEvent)
 		{
-			if (_players.TryAdd(id, name))
-			{
-				var portrait = new Portrait(name, id);
-				portrait.Name = $"Portrait_{id}";
-
-				portraits.Add(portrait);
-			}
-		}
-
-		flowLayoutPanel_players.Controls.AddRange(portraits.ToArray());
-		flowLayoutPanel_players.ResumeLayout(true);
-	}
-
-	private void UpdateBubble(object? sender, EventArgs e)
-	{
-		List<Control> list = new List<Control>();
-		int addCnt = 0;
-
-		while (_controls.TryDequeue(out var bubble))
-		{
-			list.Add(bubble);
-			addCnt++;
-
-			if (addCnt > 50)
-			{
+			case UserJoinEvent joinEvent:
+			case UserLeftEvent leftEvent:
+			case SelfJoinEvent selfEvent:
+				contentHeight = 20;
 				break;
-			}
+			case ChatMessageEvent msgEvent:
+				{
+					int maxTextWidth = MAX_BUBBLE_WIDTH - _bubblePadding.Horizontal;
+					SizeF textSize = e.Graphics.MeasureString(msgEvent.Message, listBox_chat.Font, maxTextWidth);
+					contentHeight = (int)Math.Ceiling(textSize.Height) + _bubblePadding.Vertical;
+
+					if (!msgEvent.IsMine)
+					{
+						bool showName = true;
+						if (e.Index - 1 >= 0)
+						{
+							var prevChatEvent = (ChatEvent)listBox_chat.Items[e.Index - 1];
+							if (prevChatEvent is ChatMessageEvent prevMsgEvent)
+							{
+								if (prevMsgEvent.uid == msgEvent.uid)
+								{
+									showName = false;
+								}
+							}
+						}
+
+						if (showName)
+						{
+							contentHeight += listBox_chat.Font.Height + 4;
+						}
+					}
+				}
+				break;
+			default:
+				contentHeight = 10;
+				break;
 		}
 
-		if (list.Count > 0)
+		e.ItemHeight = contentHeight + ITEM_VERTICA_MARGIN;
+	}
+
+	private void ListBoxChat_DrawItem(object? sender, DrawItemEventArgs e)
+	{
+		if (e.Index < 0)
+			return;
+
+
+		ChatEvent chatEvent = (ChatEvent)listBox_chat.Items[e.Index];
+
+		e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+		e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+
+		//e.DrawBackground();
+		e.Graphics.FillRectangle(Brushes.LightSteelBlue, e.Bounds);
+
+		switch (chatEvent)
 		{
-			flowLayoutPanel_main.SuspendLayout();
-			flowLayoutPanel_main.Controls.AddRange(list.ToArray());
+			case UserJoinEvent joinEvent:
+				{
+					string msg = $"{joinEvent.Name}({joinEvent.uid})님이 입장했습니다.";
+					TextRenderer.DrawText(e.Graphics, msg, _font, e.Bounds, Color.DimGray, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+				}
+				break;
+			case UserLeftEvent leftEvent:
+				{
+					string msg = $"{leftEvent.Name}({leftEvent.uid})님이 퇴장했습니다.";
+					TextRenderer.DrawText(e.Graphics, msg, _font, e.Bounds, Color.DimGray, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+				}
+				break;
+			case ChatMessageEvent msgEvent:
+				{
+					int maxTextWidth = MAX_BUBBLE_WIDTH - _bubblePadding.Horizontal;
+					SizeF textSize = e.Graphics.MeasureString(msgEvent.Message, listBox_chat.Font, maxTextWidth);
 
-			while (flowLayoutPanel_main.Controls.Count > MAX_BUBBLE_COUNT)
-			{
-				var old = flowLayoutPanel_main.Controls[0];
-				flowLayoutPanel_main.Controls.RemoveAt(0);
-				old.Dispose();
-			}
+					Size bubbleSize = new Size(
+						(int)Math.Ceiling(textSize.Width) + 1 + _bubblePadding.Horizontal,
+						(int)Math.Ceiling(textSize.Height) + _bubblePadding.Vertical);
 
-			flowLayoutPanel_main.ResumeLayout(true);
+					Rectangle bubbleRect;
 
-			if (flowLayoutPanel_main.Controls.Count > 0)
-			{
-				var last = flowLayoutPanel_main.Controls[^1];
-				flowLayoutPanel_main.ScrollControlIntoView(last);
-			}
+					if (msgEvent.IsMine)
+					{
+						bubbleRect = new Rectangle(
+							e.Bounds.Right - bubbleSize.Width - 5,
+							e.Bounds.Top + 5,
+							bubbleSize.Width,
+							bubbleSize.Height);
+					}
+					else
+					{
+						bool showName = true;
+						if (e.Index - 1 >= 0)
+						{
+							var prevChatEvent = (ChatEvent)listBox_chat.Items[e.Index - 1];
+							if (prevChatEvent is ChatMessageEvent prevMsgEvent)
+							{
+								if (prevMsgEvent.uid == msgEvent.uid)
+								{
+									showName = false;
+								}
+							}
+						}
+
+						int rectY = 0;
+						if (showName)
+						{
+							Point namePoint = new Point(e.Bounds.Left + 5, e.Bounds.Top + 5);
+							e.Graphics.DrawString($"{msgEvent.Name}({msgEvent.uid})", listBox_chat.Font, Brushes.Black, namePoint);
+
+							rectY = namePoint.Y + listBox_chat.Font.Height + 4;
+						}
+						else
+						{
+							rectY = e.Bounds.Top + 5;
+						}
+
+						bubbleRect = new Rectangle(
+							e.Bounds.Left + 5,
+							rectY,
+							bubbleSize.Width,
+							bubbleSize.Height);
+					}
+
+					Rectangle textRect = new Rectangle(
+						bubbleRect.Left + _bubblePadding.Left,
+						bubbleRect.Top + _bubblePadding.Top,
+						(int)Math.Ceiling(textSize.Width),
+						(int)Math.Ceiling(textSize.Height));
+
+					e.Graphics.FillRectangle(msgEvent.IsMine ? Brushes.Gold : Brushes.White, bubbleRect);
+					e.Graphics.DrawString(msgEvent.Message, listBox_chat.Font, Brushes.Black, textRect);
+				}
+				break;
+			case SelfJoinEvent selfEvent:
+				{
+					string msg = "입장했습니다.";
+					TextRenderer.DrawText(e.Graphics, msg, new Font("맑은 고딕", 9), e.Bounds, Color.DimGray, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+				}
+				break;
+			default:
+				break;
 		}
 	}
 
 
-	private void AddSystemMsg(string msg)
+	private void ListBoxUser_DrawItem(object? sender, DrawItemEventArgs e)
 	{
-		var systemMsg = new SystemMsg(msg);
-		_controls.Enqueue(systemMsg);
-	}
+		if (e.Index < 0)
+			return;
 
-	private void AddBubble(string name, ulong id, string msg)
-	{
-		var bubble = new Bubble(name, id, msg);
-		_controls.Enqueue(bubble);
-	}
+		//e.DrawBackground();
+		e.Graphics.FillRectangle(Brushes.White, e.Bounds);
 
-	private void AddMyBubble(string msg)
-	{
-		var bubble = new MyBubble(msg);
-		_controls.Enqueue(bubble);
-	}
+		User user = (User)listBox_user.Items[e.Index];
 
-	private void AddPlayerItem(ulong id, string name)
-	{
-		this.DrawUI(() =>
+		var profileRect = new Rectangle(e.Bounds.Left + 5, e.Bounds.Top, 70, 70);
+		var profileImage = GetImage(user.uid);
+		if (profileImage != null)
 		{
-			var portrait = new Portrait(name, id);
-			portrait.Name = $"Portrait_{id}";
-			flowLayoutPanel_players.Controls.Add(portrait);
-		});
+			e.Graphics.DrawImage(profileImage, profileRect);
+		}
+		else
+		{
+			e.Graphics.FillRectangle(Brushes.White, profileRect);
+		}
+
+		var nameRect = new Rectangle(
+			profileRect.Right + 10,
+			e.Bounds.Top,
+			e.Bounds.Width - profileRect.Right - 15,
+			e.Bounds.Height
+			);
+
+		TextFormatFlags flags = TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.WordBreak;
+		TextRenderer.DrawText(e.Graphics, $"{user.Name}({user.uid})", e.Font, nameRect, Color.Black, flags);
 	}
 
-	private void RemovePlayerItem(ulong id)
+	Bitmap? GetImage(ulong uid)
 	{
-		this.DrawUI(() =>
+		var num = uid % 5;
+		Bitmap? bitmap = null;
+
+		switch (num)
 		{
-			var portrait = flowLayoutPanel_players.Controls[$"Portrait_{id}"];
-			if (portrait != null)
-			{
-				flowLayoutPanel_players.Controls.Remove(portrait);
-				portrait.Dispose();
-			}
-		});
+			case 0: bitmap = Properties.Resources.bear; break;
+			case 1: bitmap = Properties.Resources.cat; break;
+			case 2: bitmap = Properties.Resources.chicken; break;
+			case 3: bitmap = Properties.Resources.lion; break;
+			case 4: bitmap = Properties.Resources.panda; break;
+			default:
+				break;
+		}
+
+		return bitmap;
 	}
 
 	#endregion
+
 
 	#region network
 	private void OnReceived(ISession session, ushort packetId, ReadOnlySpan<byte> body)
@@ -217,27 +377,39 @@ public partial class WinChat : Form
 
 	private void OnReceived(ISession session, ChatNot noti)
 	{
-		if (_players.TryGetValue(noti.SessionId, out string? name))
+		if (_dicUser.TryGetValue(noti.SessionId, out var user))
 		{
-			AddBubble(name, noti.SessionId, noti.Desc);
+			ChatMessageEvent msgEvent = new ChatMessageEvent(noti.SessionId, user.Name, noti.Desc);
+			PushChatEvent(msgEvent);
 		}
 	}
 
 	private void OnReceived(ISession session, JoinRoomNot noti)
 	{
-		if (_players.TryAdd(noti.Player.SessionId, noti.Player.Name))
+		var newUser = new User(noti.Player.SessionId, noti.Player.Name);
+		if (_dicUser.TryAdd(noti.Player.SessionId, newUser))
 		{
-			AddPlayerItem(noti.Player.SessionId, noti.Player.Name);
-			AddSystemMsg($"{noti.Player.Name}({noti.Player.SessionId})님이 입장했습니다.");
+			this.DrawUI(() =>
+			{
+				listBox_user.Items.Add(newUser);
+			});
+
+			UserJoinEvent joinEvent = new UserJoinEvent(noti.Player.SessionId, noti.Player.Name);
+			PushChatEvent(joinEvent);
 		}
 	}
 
 	private void OnReceived(ISession session, LeaveRoomNot noti)
 	{
-		if (_players.TryRemove(noti.SessionId, out string? name))
+		if (_dicUser.TryRemove(noti.SessionId, out var user))
 		{
-			RemovePlayerItem(noti.SessionId);
-			AddSystemMsg($"{name}({noti.SessionId})님이 퇴장했습니다.");
+			this.DrawUI(() =>
+			{
+				listBox_user.Items.Remove(user);
+			});
+
+			UserLeftEvent leftEvent = new UserLeftEvent(noti.SessionId, user.Name);
+			PushChatEvent(leftEvent);
 		}
 	}
 
@@ -245,24 +417,19 @@ public partial class WinChat : Form
 	{
 		if (res.ErrorCode != ErrorCode.Ok)
 		{
-			this.DrawUI(() =>
-			{
-				MessageBox.Show($"{res.ErrorCode}", "서버 에러");
-			});
+			this.ShowMsgBox($"{res.ErrorCode}", "서버 에러");
 			return;
 		}
 
-		AddMyBubble(res.Desc);
+		ChatMessageEvent msgEvent = new ChatMessageEvent(res.Desc);
+		PushChatEvent(msgEvent);
 	}
 
 	private void OnReceived(ISession session, LeaveRoomRes res)
 	{
 		if (res.ErrorCode != ErrorCode.Ok)
 		{
-			this.DrawUI(() =>
-			{
-				MessageBox.Show($"{res.ErrorCode}", "서버 에러");
-			});
+			this.ShowMsgBox($"{res.ErrorCode}", "서버 에러");
 			return;
 		}
 
@@ -273,4 +440,5 @@ public partial class WinChat : Form
 		});
 	}
 	#endregion
+
 }

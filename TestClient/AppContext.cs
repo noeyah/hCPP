@@ -36,7 +36,7 @@ internal class AppContext : ApplicationContext
 	{
 		var winChat = new WinChat(_network);
 		winChat.OpenWinLobby += ShowWinLobby;
-		winChat.SetPlayers(players);
+		winChat.InitUsers(players);
 		winChat.StartPosition = FormStartPosition.Manual;
 		winChat.Location = this.MainForm!.Location;
 		this.MainForm = winChat;

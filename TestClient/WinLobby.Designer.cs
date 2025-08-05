@@ -80,29 +80,30 @@
 			// 
 			radioButton_chat.AutoSize = true;
 			radioButton_chat.Checked = true;
-			radioButton_chat.Location = new Point(22, 22);
+			radioButton_chat.Location = new Point(39, 22);
 			radioButton_chat.Name = "radioButton_chat";
-			radioButton_chat.Size = new Size(104, 19);
+			radioButton_chat.Size = new Size(112, 19);
 			radioButton_chat.TabIndex = 3;
 			radioButton_chat.TabStop = true;
-			radioButton_chat.Text = "UI가 중요한 방";
+			radioButton_chat.Text = "채팅방 UI (기본)";
 			radioButton_chat.UseVisualStyleBackColor = true;
 			// 
 			// radioButton_text
 			// 
 			radioButton_text.AutoSize = true;
-			radioButton_text.Location = new Point(161, 22);
+			radioButton_text.Location = new Point(190, 22);
 			radioButton_text.Name = "radioButton_text";
-			radioButton_text.Size = new Size(117, 19);
+			radioButton_text.Size = new Size(61, 19);
 			radioButton_text.TabIndex = 4;
 			radioButton_text.TabStop = true;
-			radioButton_text.Text = "성능이 중요한 방";
+			radioButton_text.Text = "텍스트";
 			radioButton_text.UseVisualStyleBackColor = true;
 			// 
 			// groupBox_room
 			// 
 			groupBox_room.Controls.Add(radioButton_chat);
 			groupBox_room.Controls.Add(radioButton_text);
+			groupBox_room.Enabled = false;
 			groupBox_room.Location = new Point(39, 33);
 			groupBox_room.Name = "groupBox_room";
 			groupBox_room.Size = new Size(305, 53);

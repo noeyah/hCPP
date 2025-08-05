@@ -43,10 +43,10 @@
 			button_send = new Button();
 			richTextBox_bottom = new RichTextBox();
 			panel_info = new Panel();
-			flowLayoutPanel_players = new FlowLayoutPanel();
+			listBox_user = new ListBox();
 			button_exit = new Button();
+			listBox_chat = new ListBox();
 			panel_main = new Panel();
-			flowLayoutPanel_main = new FlowLayoutPanel();
 			panel_bottom.SuspendLayout();
 			panel_info.SuspendLayout();
 			panel_main.SuspendLayout();
@@ -90,7 +90,7 @@
 			// panel_info
 			// 
 			panel_info.BackColor = SystemColors.Window;
-			panel_info.Controls.Add(flowLayoutPanel_players);
+			panel_info.Controls.Add(listBox_user);
 			panel_info.Controls.Add(button_exit);
 			panel_info.Dock = DockStyle.Left;
 			panel_info.Location = new Point(0, 0);
@@ -98,16 +98,18 @@
 			panel_info.Size = new Size(200, 509);
 			panel_info.TabIndex = 1;
 			// 
-			// flowLayoutPanel_players
+			// listBox_user
 			// 
-			flowLayoutPanel_players.AutoScroll = true;
-			flowLayoutPanel_players.Dock = DockStyle.Fill;
-			flowLayoutPanel_players.FlowDirection = FlowDirection.TopDown;
-			flowLayoutPanel_players.Location = new Point(0, 26);
-			flowLayoutPanel_players.Name = "flowLayoutPanel_players";
-			flowLayoutPanel_players.Size = new Size(200, 483);
-			flowLayoutPanel_players.TabIndex = 2;
-			flowLayoutPanel_players.WrapContents = false;
+			listBox_user.Dock = DockStyle.Fill;
+			listBox_user.DrawMode = DrawMode.OwnerDrawFixed;
+			listBox_user.FormattingEnabled = true;
+			listBox_user.IntegralHeight = false;
+			listBox_user.ItemHeight = 15;
+			listBox_user.Location = new Point(0, 26);
+			listBox_user.Name = "listBox_user";
+			listBox_user.SelectionMode = SelectionMode.None;
+			listBox_user.Size = new Size(200, 483);
+			listBox_user.TabIndex = 2;
 			// 
 			// button_exit
 			// 
@@ -122,26 +124,30 @@
 			button_exit.UseVisualStyleBackColor = false;
 			button_exit.Click += button_exit_Click;
 			// 
+			// listBox_chat
+			// 
+			listBox_chat.BackColor = Color.LightSteelBlue;
+			listBox_chat.BorderStyle = BorderStyle.None;
+			listBox_chat.Dock = DockStyle.Fill;
+			listBox_chat.DrawMode = DrawMode.OwnerDrawVariable;
+			listBox_chat.FormattingEnabled = true;
+			listBox_chat.IntegralHeight = false;
+			listBox_chat.ItemHeight = 15;
+			listBox_chat.Location = new Point(0, 0);
+			listBox_chat.Name = "listBox_chat";
+			listBox_chat.SelectionMode = SelectionMode.None;
+			listBox_chat.Size = new Size(397, 411);
+			listBox_chat.TabIndex = 0;
+			// 
 			// panel_main
 			// 
 			panel_main.BackColor = SystemColors.GradientInactiveCaption;
-			panel_main.Controls.Add(flowLayoutPanel_main);
+			panel_main.Controls.Add(listBox_chat);
 			panel_main.Dock = DockStyle.Top;
 			panel_main.Location = new Point(200, 0);
 			panel_main.Name = "panel_main";
 			panel_main.Size = new Size(397, 411);
 			panel_main.TabIndex = 2;
-			// 
-			// flowLayoutPanel_main
-			// 
-			flowLayoutPanel_main.AutoScroll = true;
-			flowLayoutPanel_main.Dock = DockStyle.Fill;
-			flowLayoutPanel_main.FlowDirection = FlowDirection.TopDown;
-			flowLayoutPanel_main.Location = new Point(0, 0);
-			flowLayoutPanel_main.Name = "flowLayoutPanel_main";
-			flowLayoutPanel_main.Size = new Size(397, 411);
-			flowLayoutPanel_main.TabIndex = 0;
-			flowLayoutPanel_main.WrapContents = false;
 			// 
 			// WinChat
 			// 
@@ -169,9 +175,9 @@
 		private RichTextBox richTextBox_bottom;
 		private Button button_send;
 		private Panel panel_info;
-		private Panel panel_main;
-		private FlowLayoutPanel flowLayoutPanel_main;
 		private Button button_exit;
-		private FlowLayoutPanel flowLayoutPanel_players;
+		private ListBox listBox_user;
+		private ListBox listBox_chat;
+		private Panel panel_main;
 	}
 }

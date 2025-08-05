@@ -24,6 +24,14 @@ internal static class Extension
 		}
 	}
 
+	public static void ShowMsgBox(this Form form, string desc, string title)
+	{
+		form.BeginInvoke(() =>
+		{
+			MessageBox.Show(desc, title);
+		});
+	}
+
 	public static void Reset(this RichTextBox textBox)
 	{
 		textBox.Clear();
