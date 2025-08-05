@@ -50,7 +50,7 @@ git clone https://github.com/noeyah/hCPP.git
 	- 빌드하고 실행합니다.
 
 ### 🎀 실행 화면
-![testClient_chat](https://github.com/user-attachments/assets/2fca5037-edae-4300-84ae-6036565e44b4)
+![hcpp_test](https://github.com/user-attachments/assets/277952f9-debb-48e2-ba0f-41b08e1494e3)
 
 
 ## 📚 프로젝트 구성
