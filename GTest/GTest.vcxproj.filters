@@ -30,9 +30,6 @@
     <ClCompile Include="libTest\TEST_Scheduler.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="..\include\googletest\googletest\src\gtest-all.cc">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="libTest\TEST_WorkerThread.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -58,6 +55,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="libTest\TEST_Database.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\googletest\src\gtest-all.cc">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
