@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Packet\csharp\Chat.cs" Link="Packet\Chat.cs" />
+    <Compile Include="..\Packet\csharp\Enums.cs" Link="Packet\Enums.cs" />
+    <Compile Include="..\Packet\csharp\PacketHelper.cs" Link="Packet\PacketHelper.cs" />
+    <Compile Include="..\Packet\csharp\PacketID.cs" Link="Packet\PacketID.cs" />
+    <Compile Include="..\Packet\csharp\Room.cs" Link="Packet\Room.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.30.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\hCSharpLibrary\hCSharpLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

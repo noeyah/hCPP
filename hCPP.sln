@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "솔루션 항목", "솔루�
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestServer_CS", "TestServer_CS\TestServer_CS.csproj", "{734952DF-3259-4FAD-9771-E3FBDB944E09}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +119,18 @@ Global
 		{AC8C0265-66AA-4425-B3D0-27FCB03F0F06}.Release|x64.Build.0 = Release|Any CPU
 		{AC8C0265-66AA-4425-B3D0-27FCB03F0F06}.Release|x86.ActiveCfg = Release|Any CPU
 		{AC8C0265-66AA-4425-B3D0-27FCB03F0F06}.Release|x86.Build.0 = Release|Any CPU
+		{734952DF-3259-4FAD-9771-E3FBDB944E09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{734952DF-3259-4FAD-9771-E3FBDB944E09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{734952DF-3259-4FAD-9771-E3FBDB944E09}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{734952DF-3259-4FAD-9771-E3FBDB944E09}.Debug|x64.Build.0 = Debug|Any CPU
+		{734952DF-3259-4FAD-9771-E3FBDB944E09}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{734952DF-3259-4FAD-9771-E3FBDB944E09}.Debug|x86.Build.0 = Debug|Any CPU
+		{734952DF-3259-4FAD-9771-E3FBDB944E09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{734952DF-3259-4FAD-9771-E3FBDB944E09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{734952DF-3259-4FAD-9771-E3FBDB944E09}.Release|x64.ActiveCfg = Release|Any CPU
+		{734952DF-3259-4FAD-9771-E3FBDB944E09}.Release|x64.Build.0 = Release|Any CPU
+		{734952DF-3259-4FAD-9771-E3FBDB944E09}.Release|x86.ActiveCfg = Release|Any CPU
+		{734952DF-3259-4FAD-9771-E3FBDB944E09}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
