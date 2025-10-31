@@ -1,4 +1,4 @@
-#include "CmdService.h"
+﻿#include "CmdService.h"
 #include <iostream>
 #include <format>
 #include <syncstream>
@@ -52,7 +52,7 @@ namespace hlib::cmd
 
 			std::string cmd;
 			CommandArgs args;
-			ReadCommand(input, cmd, args);
+			ReadCommand(input, OUT cmd, OUT args);
 
 			Execute(cmd, args);
 		}

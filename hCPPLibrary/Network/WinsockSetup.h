@@ -1,12 +1,10 @@
-#pragma once
+﻿#pragma once
 #include "Util/Singleton.h"
 
 namespace hlib::net
 {
-	class WinsockSetup
+	class WinsockSetup : public Singleton<WinsockSetup>
 	{
-		DEFINE_SINGLETON(WinsockSetup);
-
 	public:
 		WinsockSetup();
 		~WinsockSetup();

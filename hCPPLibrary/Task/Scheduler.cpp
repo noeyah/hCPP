@@ -1,4 +1,4 @@
-#include "Scheduler.h"
+﻿#include "Scheduler.h"
 #include "IJobQueue.h"
 
 namespace hlib::task
@@ -21,12 +21,12 @@ namespace hlib::task
 		thread_.Stop();
 	}
 
-	void Scheduler::Push(time_point time, std::shared_ptr<IJob> job)
+	void Scheduler::Push(time_point time, IJob::SharedPtr job)
 	{
 		bool needNotify = false;
 
 		{
-			std::lock_guard<std::mutex> lock(mtx_);
+			std::lock_guard lock(mtx_);
 
 			if (scheduleMap_.empty() || scheduleMap_.begin()->first > time)
 				needNotify = true;
@@ -40,13 +40,13 @@ namespace hlib::task
 
 	void Scheduler::Work(std::atomic_bool& running)
 	{
-		std::vector<std::shared_ptr<IJob>> expiredJobs;
+		std::vector<IJob::SharedPtr> expiredJobs;
 		Time::steady_time nextWakeup;
 
 		while (running.load())
 		{
 			{
-				std::unique_lock<std::mutex> lock(mtx_);
+				std::unique_lock lock(mtx_);
 
 				if (scheduleMap_.empty())
 					nextWakeup = Time::NowSteady() + std::chrono::hours(1);

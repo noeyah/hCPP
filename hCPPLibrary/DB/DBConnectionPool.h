@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "WinCommon.h"
 #include <sql.h>
 #include <mutex>

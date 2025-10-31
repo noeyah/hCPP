@@ -1,16 +1,15 @@
-#pragma once
+﻿#pragma once
 #include <memory>
 #include <span>
 #include <cstddef>
 #include <cstdint>
 #include <atomic>
-#include <Network/Connection/Session.h>
-#include <Util/TimeUtil.h>
+#include "core.h"
 #include <mutex>
 
 class PacketDispatcher;
 
-class ClientSession : public hlib::net::Session
+class ClientSession : public core::Session
 {
 public:
 	ClientSession(PacketDispatcher& dispatcher) : packetDispatcher_(dispatcher)

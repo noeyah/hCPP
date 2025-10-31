@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <mutex>
 #include <atomic>
 #include <memory>
@@ -15,14 +15,14 @@ namespace hlib::cmd
 	using CommandArgs = Vector<std::string>;
 	using CommandAction = std::function<void(const CommandArgs&)>;
 
-	struct CommandInfo
-	{
-		std::string desc;
-		CommandAction action;
-	};
-
 	class CmdService
 	{
+		struct CommandInfo
+		{
+			std::string desc;
+			CommandAction action;
+		};
+
 	public:
 		CmdService();
 		~CmdService() = default;

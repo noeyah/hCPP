@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <functional>
 #include <unordered_map>
 #include <span>
@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <type_traits>
 #include <google/protobuf/message.h>
-#include <Util/Macro.h>
+#include "Util/Macro.h"
 #include "PacketID.h"
 #include "PacketEnums.h"
 #include "Client/ClientSession.h"
@@ -23,7 +23,7 @@ public:
 	void OnDisconnected(SessionPtr& session);
 
 private:
-	// �ʱ�ȭ �Լ� PacketDispatcherInit.cpp
+	// 초기화 함수 PacketDispatcherInit.cpp
 	void Initialize();
 
 	template <typename TPacket>

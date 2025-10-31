@@ -7,9 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <google/protobuf/message.h>
-#include <Memory/Allocator.h>
-#include <Network/NetCommon.h>
-#include <Network/Buffer/PacketBuffer.h>
+#include "core.h"
 #include "PacketID.h"
 
 class PacketRegister
@@ -31,17 +29,17 @@ public:
 
 	template <typename TPacket>
 		requires std::is_base_of_v<google::protobuf::Message, TPacket>
-	static std::shared_ptr<hlib::net::PacketBuffer> Serialize(const TPacket& sendPacket)
+	static std::shared_ptr<core::PacketBuffer> Serialize(const TPacket& sendPacket)
 	{
 		size_t packetSize = sendPacket.ByteSizeLong();
-		size_t bufferSize = hlib::net::HEADER_SIZE + packetSize;
+		size_t bufferSize = core::HEADER_SIZE + packetSize;
 
-		hlib::net::PacketHeader header;
+		core::PacketHeader header;
 		header.size = static_cast<uint16_t>(bufferSize);
 		header.id = GetID<TPacket>();
 
-		auto sendBuffer = hlib::MakeSharedPtr<hlib::net::PacketBuffer>(bufferSize);
-		sendBuffer->Write(reinterpret_cast<const std::byte*>(&header), hlib::net::HEADER_SIZE);
+		auto sendBuffer = core::MakeSharedPtr<core::PacketBuffer>(bufferSize);
+		sendBuffer->Write(reinterpret_cast<const std::byte*>(&header), core::HEADER_SIZE);
 
 		bool success = sendPacket.SerializeToArray(sendBuffer->WritePtr(), static_cast<int>(packetSize));
 		ASSERT_CRASH(success);

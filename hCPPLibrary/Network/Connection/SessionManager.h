@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <atomic>
 #include <cstdint>
 #include <memory>
@@ -15,17 +15,17 @@ namespace hlib::net
 	class SessionManager
 	{
 	public:
-		using SessionFactory = std::function<std::shared_ptr<Session>()>;
+		using SessionFactory = std::function<Session::SharedPtr()>;
 
 	public:
 		SessionManager(HANDLE handle, SessionFactory factory);
 		~SessionManager();
 		void SetReturnSockCallback(Session::ReturnSockCallback sockReturnCallback);
 
-		std::shared_ptr<Session> Create(SOCKET socket, const SOCKADDR_IN* sockAddr);
+		Session::SharedPtr Create(SOCKET socket, const SOCKADDR_IN* sockAddr);
 		void CreateAndStart(SOCKET socket, const SOCKADDR_IN* sockAddr = nullptr);
 
-		std::shared_ptr<Session> Get(SessionId sessionId);
+		Session::SharedPtr Get(SessionId sessionId);
 
 		void Close();
 
@@ -37,11 +37,11 @@ namespace hlib::net
 		SharedSpinLock sspin_;
 
 		std::atomic_uint64_t lastSessionId_ = 0;
-		std::unordered_map<SessionId, std::shared_ptr<Session>> sessions_;
-		SessionFactory sessionFactory_;
+		std::unordered_map<SessionId, Session::SharedPtr> sessions_{};
+		SessionFactory sessionFactory_{};
 
 		HANDLE iocpHandle_;
 
-		Session::ReturnSockCallback sockReturnCallback_ = nullptr;
+		Session::ReturnSockCallback sockReturnCallback_{};
 	};
 }

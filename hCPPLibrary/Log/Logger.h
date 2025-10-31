@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <mutex>
 #include <atomic>
 #include <memory>
@@ -13,34 +13,10 @@
 
 namespace hlib::log
 {
-	class Logger
+	class Logger : public Singleton<Logger>
 	{
-		DEFINE_SINGLETON(Logger);
-
 	public:
-		
-		template <typename... Args>
-		void Log(LogLevel level, const std::source_location& sl, std::format_string<Args...> fmt, Args&&... args)
-		{
-			std::string msg = std::format(fmt, std::forward<Args>(args)...);
-
-			logQueue_.Push(LogMessage(level, std::move(msg), sl));
-		}
-
-		void AddStream(std::shared_ptr<ILogStream> stream)
-		{
-			std::lock_guard lock(streamMtx_);
-			logStreams_.push_back(stream);
-		}
-
-		void ClearStream()
-		{
-			std::lock_guard lock(streamMtx_);
-			logStreams_.clear();
-		}
-
-	private:
-		Logger() : thread_([this](std::atomic_bool& running) { this->Work(running); }, 
+		Logger() : thread_([this](std::atomic_bool& running) { this->Work(running); },
 						   [this]() { this->logQueue_.RequestStop(); })
 		{
 			AddStream(std::make_shared<ConsoleLog>());
@@ -55,6 +31,27 @@ namespace hlib::log
 			thread_.Stop();
 		}
 
+		template <typename... Args>
+		void Log(LogLevel level, const std::source_location& sl, std::format_string<Args...> fmt, Args&&... args)
+		{
+			std::string msg = std::format(fmt, std::forward<Args>(args)...);
+
+			logQueue_.Push(LogMessage(level, std::move(msg), sl));
+		}
+
+		void AddStream(std::shared_ptr<ILogStream> stream)
+		{
+			std::lock_guard lock(mtx_);
+			logStreams_.push_back(stream);
+		}
+
+		void ClearStream()
+		{
+			std::lock_guard lock(mtx_);
+			logStreams_.clear();
+		}
+
+	private:
 		void Work(std::atomic_bool& running)
 		{
 			while (running.load())
@@ -64,7 +61,7 @@ namespace hlib::log
 					break;
 
 				{
-					std::lock_guard lock(streamMtx_);
+					std::lock_guard lock(mtx_);
 					if (logStreams_.empty())
 						continue;
 
@@ -81,6 +78,6 @@ namespace hlib::log
 		WorkerThread thread_;
 
 		std::vector<std::shared_ptr<ILogStream>> logStreams_;
-		std::mutex streamMtx_;
+		std::mutex mtx_;
 	};
 }

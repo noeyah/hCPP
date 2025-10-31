@@ -1,4 +1,4 @@
-#include "Room.h"
+﻿#include "Room.h"
 
 void Room::JoinUser(uint64_t sessionId, const std::string& name, std::weak_ptr<ClientSession> session)
 {
@@ -21,7 +21,7 @@ void Room::ForEachUser(const std::function<void(const User&)>& fn) const
 	}
 }
 
-void Room::Broadcast(std::shared_ptr<hlib::net::PacketBuffer> buffer, uint64_t excludeId)
+void Room::Broadcast(std::shared_ptr<core::PacketBuffer> buffer, uint64_t excludeId)
 {
 	auto users = GetSessionPtrs(excludeId);
 	for (const auto& user : users)
@@ -36,9 +36,9 @@ bool Room::IsMember(uint64_t sessionId)
 	return users_.contains(sessionId);
 }
 
-hlib::Vector<std::shared_ptr<ClientSession>> Room::GetSessionPtrs(uint64_t excludeId) const
+core::Vector<std::shared_ptr<ClientSession>> Room::GetSessionPtrs(uint64_t excludeId) const
 {
-	hlib::Vector<std::shared_ptr<ClientSession>> ptrs;
+	core::Vector<std::shared_ptr<ClientSession>> ptrs;
 
 	std::lock_guard lock(mtx_);
 	ptrs.reserve(users_.size());

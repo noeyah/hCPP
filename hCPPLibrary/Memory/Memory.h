@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <memory_resource>
 #include <string>
 #include "Config.h"
@@ -10,10 +10,8 @@
 
 namespace hlib
 {
-	class Memory
+	class Memory : public Singleton<Memory>
 	{
-		DEFINE_SINGLETON(Memory);
-	
 	public:
 		void* Allocate(size_t size, size_t align)
 		{
@@ -45,7 +43,7 @@ namespace hlib
 		}
 #endif // _DEBUG
 
-	private:
+	public:
 		Memory()
 		{
 			std::string modeName;

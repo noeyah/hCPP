@@ -1,4 +1,4 @@
-#include "SessionManager.h"
+﻿#include "SessionManager.h"
 #include <vector>
 #include "Util/Macro.h"
 #include "Network/Socket/SocketUtil.h"
@@ -21,14 +21,14 @@ namespace hlib::net
 		sockReturnCallback_ = sockReturnCallback;
 	}
 
-	std::shared_ptr<Session> SessionManager::Create(SOCKET socket, const SOCKADDR_IN* sockAddr)
+	Session::SharedPtr SessionManager::Create(SOCKET socket, const SOCKADDR_IN* sockAddr)
 	{
 		auto sessionId = GenerateSessionId();
 		auto removeCallback = [this](SessionId removeId) {
 			this->Remove(removeId);
 		};
 		
-		std::shared_ptr<Session> session = sessionFactory_();
+		Session::SharedPtr session = sessionFactory_();
 		session->Initialize(socket, sessionId, *sockAddr, removeCallback);
 
 		if (sockReturnCallback_)
@@ -55,7 +55,7 @@ namespace hlib::net
 			session->StartIo();
 	}
 
-	std::shared_ptr<Session> SessionManager::Get(SessionId sessionId)
+	Session::SharedPtr SessionManager::Get(SessionId sessionId)
 	{
 		SharedLock lock(sspin_);
 
@@ -68,7 +68,7 @@ namespace hlib::net
 
 	void SessionManager::Close()
 	{
-		std::vector<std::shared_ptr<Session>> sessions;
+		std::vector<Session::SharedPtr> sessions;
 
 		{
 			SharedLock lock(sspin_);

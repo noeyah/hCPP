@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <memory>
 #include <cstdint>
 #include <atomic>
@@ -26,6 +26,7 @@ namespace hlib::net
 	public:
 		using DisconnectCallback = std::function<void(SessionId)>;
 		using ReturnSockCallback = std::function<void(SOCKET)>;
+		using SharedPtr = std::shared_ptr<Session>;
 
 	private:
 		enum State : uint8_t
@@ -70,7 +71,7 @@ namespace hlib::net
 #endif // _DEBUG
 
 	protected:
-		// »ç¿ëÀÚ Á¤ÀÇ ÇÊ¿ä
+		// ì‚¬ìš©ì ì •ì˜ í•„ìš”
 		virtual void OnConnected() = 0;
 		virtual void OnDisconnected() = 0;
 		virtual void OnReceive(uint16_t packetId, std::span<const std::byte> packet) = 0;

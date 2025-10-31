@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+ï»¿#include <gtest/gtest.h>
 #include <memory>
 #include <atomic>
 
@@ -20,27 +20,27 @@ struct MemoryTestData
 
 TEST(MemoryTest, Basic) 
 {
-	hlib::Memory& mem = hlib::Memory::Instance();
+	auto mem = hlib::Memory::Instance();
 
 	const size_t size = 128;
 	const size_t align = alignof(std::max_align_t);
 
 	void* ptr = nullptr;
 	ASSERT_NO_THROW({
-		ptr = mem.Allocate(size, align);
+		ptr = mem->Allocate(size, align);
 		});
 
-	// ÇÒ´ç ¼º°ø Ã¼Å©
+	// í• ë‹¹ ì„±ê³µ ì²´í¬
 	ASSERT_NE(ptr, nullptr);
 
-	// °£´ÜÈ÷ ¾²±â/ÀĞ±â ½Ãµµ
+	// ê°„ë‹¨íˆ ì“°ê¸°/ì½ê¸° ì‹œë„
 	if (ptr) {
 		*static_cast<char*>(ptr) = 'A';
 		EXPECT_EQ(*static_cast<char*>(ptr), 'A');
 	}
 
 	ASSERT_NO_THROW({
-		mem.Release(ptr, size, align);
+		mem->Release(ptr, size, align);
 		});
 }
 
@@ -60,7 +60,7 @@ TEST(MemoryTest, NewDelete)
 		});
 
 	ASSERT_NO_THROW({
-		// nullptr »èÁ¦ ½ÃµµÇÏ¸é ¸®ÅÏ
+		// nullptr ì‚­ì œ ì‹œë„í•˜ë©´ ë¦¬í„´
 		hlib::Delete<int>(nullptr);
 		});
 }
@@ -84,7 +84,7 @@ TEST(MemoryTest, NewDeleteObject)
 		hlib::Delete(p_data);
 		});
 
-	// ¼Ò¸êÀÚ È£Ãâ È½¼ö È®ÀÎ
+	// ì†Œë©¸ì í˜¸ì¶œ íšŸìˆ˜ í™•ì¸
 	EXPECT_EQ(MemoryTestData::destructor_count.load(), 1);
 }
 
@@ -103,7 +103,7 @@ TEST(MemoryTest, MakeSharedPtr)
 		EXPECT_DOUBLE_EQ(sp_data->value, 7979.5959);
 
 		EXPECT_EQ(MemoryTestData::destructor_count.load(), 0);
-	} // shared_ptr »èÁ¦
+	} // shared_ptr ì‚­ì œ
 
 	EXPECT_EQ(MemoryTestData::destructor_count.load(), 1);
 }

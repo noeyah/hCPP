@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <mutex>
 #include <optional>
 #include <atomic>
@@ -15,7 +15,7 @@ namespace hlib
 		void Push(T item)
 		{
 			{
-				std::lock_guard<std::mutex> lock(mtx_);
+				std::lock_guard lock(mtx_);
 				queue_.push(std::move(item));
 			}
 			cv_.notify_one();
@@ -23,7 +23,7 @@ namespace hlib
 
 		std::optional<T> Pop()
 		{
-			std::lock_guard<std::mutex> lock(mtx_);
+			std::lock_guard lock(mtx_);
 
 			if (queue_.empty())
 				return std::nullopt;
@@ -35,7 +35,7 @@ namespace hlib
 
 		bool TryPop(OUT T& out_item)
 		{
-			std::lock_guard<std::mutex> lock(mtx_);
+			std::lock_guard lock(mtx_);
 
 			if (queue_.empty())
 				return false;
@@ -47,7 +47,7 @@ namespace hlib
 
 		bool WaitPop(OUT T& out_item)
 		{
-			std::unique_lock<std::mutex> lock(mtx_);
+			std::unique_lock lock(mtx_);
 
 			cv_.wait(lock, [this]() { 
 				return stopRequested_.load() || !queue_.empty(); 
@@ -65,7 +65,7 @@ namespace hlib
 		{
 			std::queue<T> emptyQueue;
 
-			std::lock_guard<std::mutex> lock(mtx_);
+			std::lock_guard lock(mtx_);
 			queue_.swap(emptyQueue);
 		}
 

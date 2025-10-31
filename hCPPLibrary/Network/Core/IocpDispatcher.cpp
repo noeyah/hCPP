@@ -1,4 +1,4 @@
-#include "IocpDispatcher.h"
+ï»¿#include "IocpDispatcher.h"
 #include <cassert>
 #include <cstring>
 #include "Task/IJobQueue.h"
@@ -61,9 +61,9 @@ namespace hlib::net
 
 	bool IocpDispatcher::Dispatch()
 	{
-		DWORD bytesTransferred = 0;
-		ULONG_PTR completionKey = NULL;
-		IoContext* ioContext = nullptr;
+		DWORD bytesTransferred{};
+		ULONG_PTR completionKey{};
+		IoContext* ioContext{};
 
 		auto ret = ::GetQueuedCompletionStatus(iocpHandle_, 
 											   &bytesTransferred,
@@ -80,7 +80,7 @@ namespace hlib::net
 			}
 			else if (bytesTransferred == 0 && completionKey == 0)
 			{
-				// stop ½ÅÈ£ -> loop Á¾·á
+				// stop ì‹ í˜¸ -> loop ì¢…ë£Œ
 				return false;
 			}
 			else

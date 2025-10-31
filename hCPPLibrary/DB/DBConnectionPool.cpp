@@ -1,4 +1,4 @@
-#include "DBConnectionPool.h"
+Ôªø#include "DBConnectionPool.h"
 #include <sqlext.h>
 #include "Util/Macro.h"
 
@@ -12,7 +12,7 @@ namespace hlib::db
 			env_ = SQL_NULL_HANDLE;
 		}
 
-		// std::unique_ptr<DBConnection>ø°º≠ delete
+		// std::unique_ptr<DBConnection>ÏóêÏÑú delete
 	}
 
 	void DBConnectionPool::Connect(size_t connectionCount, const WCHAR* connectionStr)

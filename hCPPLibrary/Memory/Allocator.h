@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <memory>
 #include <iostream>
 #include "Util/Macro.h"
@@ -9,7 +9,7 @@ namespace hlib
 	template<typename T, typename... Args>
 	std::shared_ptr<T> MakeSharedPtr(Args&&... args)
 	{
-		auto allocator = Memory::Instance().GetAllocator<T>();
+		auto allocator = Memory::Instance()->GetAllocator<T>();
 
 		return std::allocate_shared<T>(allocator, std::forward<Args>(args)...);
 	}
@@ -17,7 +17,7 @@ namespace hlib
 	template<typename T, typename... Args>
 	T* Alloc(Args&&... args)
 	{
-		void* rawMemory = Memory::Instance().Allocate(sizeof(T), alignof(T));
+		void* rawMemory = Memory::Instance()->Allocate(sizeof(T), alignof(T));
 		
 		T* ptr;
 		try
@@ -27,7 +27,7 @@ namespace hlib
 		}
 		catch (...)
 		{
-			Memory::Instance().Release(rawMemory, sizeof(T), alignof(T));
+			Memory::Instance()->Release(rawMemory, sizeof(T), alignof(T));
 			CRASH("faild Alloc");
 		}
 
@@ -41,7 +41,7 @@ namespace hlib
 			return;
 
 		ptr->~T();
-		Memory::Instance().Release(ptr, sizeof(T), alignof(T));
+		Memory::Instance()->Release(ptr, sizeof(T), alignof(T));
 	}
 
 	template <typename T>

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <thread>
 #include <chrono>
 #include <mutex>
@@ -52,7 +52,7 @@ namespace hlib::task
 		}
 
 	private:
-		void Push(time_point time, std::shared_ptr<IJob> job);
+		void Push(time_point time, IJob::SharedPtr job);
 
 		void Work(std::atomic_bool& running);
 
@@ -62,6 +62,6 @@ namespace hlib::task
 		std::condition_variable cv_;
 
 		std::mutex mtx_;
-		std::multimap<time_point, std::shared_ptr<IJob>> scheduleMap_;
+		std::multimap<time_point, IJob::SharedPtr> scheduleMap_{};
 	};
 }

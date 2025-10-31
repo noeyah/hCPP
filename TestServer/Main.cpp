@@ -1,21 +1,17 @@
 ﻿#include <WinCommon.h>
-#include <Memory/Memory.h>
-#include <Command/CmdService.h>
-#include <Network/NetConfig.h>
+#include "core.h"
 #include "Packet/PacketRegister.h"
 #include "MainServer.h"
-#include <Network/Connection/Session.h>
-#include <Memory/Config.h>
 
 int main()
 {
 	SetConsoleOutputCP(CP_UTF8);
 	SetConsoleCP(CP_UTF8);
 
-	hlib::Memory::Instance();
+	core::Memory::Instance();
 	PacketRegister::Initialize();
 
-	hlib::net::NetServerConfig config;
+	core::NetServerConfig config;
 	config.name = "main server";
 	config.ip = "127.0.0.1";
 	config.port = 7777;
@@ -26,26 +22,26 @@ int main()
 	MainServer server(config);
 	server.Start();
 
-	hlib::cmd::CmdService cmdService;
+	core::CmdService cmdService;
 	cmdService.RegisterCommand("exit", "exit server",
-							   [&server, &cmdService](const hlib::cmd::CommandArgs& args) {
+							   [&server, &cmdService](const core::CommandArgs& args) {
 								   server.Stop();
 								   cmdService.Exit();
 							   });
 
 #ifdef _DEBUG
 
-	if (hlib::MEMORY_RESOURCE_MODE == hlib::MemoryMode::Log)
+	if (core::MEMORY_RESOURCE_MODE == core::MemoryMode::Log)
 	{
 		cmdService.RegisterCommand("memory", "if memory mode is log, show alloc info",
-								   [](const hlib::cmd::CommandArgs& args) {
-									   hlib::Memory::Instance().Print();
+								   [](const core::CommandArgs& args) {
+									   core::Memory::Instance()->Print();
 								   });
 	}
 
 	cmdService.RegisterCommand("session", "show session count",
-							   [](const hlib::cmd::CommandArgs& args) {
-								   hlib::net::Session::Print();
+							   [](const core::CommandArgs& args) {
+								   core::Session::Print();
 							   });
 #endif // _DEBUG
 

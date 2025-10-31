@@ -1,8 +1,8 @@
-#pragma once
+﻿#pragma once
 #include <memory>
 #include <string>
 #include <cstdint>
-#include <Network/Buffer/PacketBuffer.h>
+#include "core.h"
 #include "Client/ClientSession.h"
 
 class User
@@ -13,7 +13,7 @@ public:
 	{
 	}
 
-	void Send(const std::shared_ptr<hlib::net::PacketBuffer>& buffer) const
+	void Send(const std::shared_ptr<core::PacketBuffer>& buffer) const
 	{
 		if (auto session = session_.lock())
 		{
