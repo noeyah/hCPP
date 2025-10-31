@@ -31,6 +31,7 @@
 #include "Network/NetService/NetClient.h"
 
 #include "Command/CmdService.h"
+#include "Util/TimeUtil.h"
 
 namespace core
 {
