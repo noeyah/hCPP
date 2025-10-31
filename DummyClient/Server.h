@@ -1,28 +1,24 @@
-#pragma once
-#include <Task/JobQueue.h>
-#include <Task/ThreadPool.h>
-#include <Task/Scheduler.h>
-#include <Network/NetConfig.h>
-#include <Network/NetService/NetClient.h>
+﻿#pragma once
+#include "core.h"
 #include "Packet/PacketHandler.h"
 #include "Packet/PacketDispatcher.h"
 
 class Server
 {
 public:
-	Server(hlib::net::NetClientConfig config);
+	Server(core::NetClientConfig config);
 
 	void Start();
 	void Stop();
 
 private:
-	hlib::task::JobQueue jobQueue_;
-	hlib::task::ThreadPool threadPool_;
-	hlib::task::Scheduler scheduler_;
+	core::JobQueue jobQueue_;
+	core::ThreadPool threadPool_;
+	core::Scheduler scheduler_;
 
 	PacketHandler packetHandler_;
 	PacketDispatcher packetDispatcher_;
 
-	hlib::net::NetClient netService_;
+	core::NetClient netService_;
 };
 

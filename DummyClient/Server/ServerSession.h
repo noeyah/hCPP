@@ -1,16 +1,15 @@
-#pragma once
+﻿#pragma once
 #include <memory>
 #include <span>
 #include <cstddef>
 #include <atomic>
 #include <cstdint>
-#include <Network/Connection/Session.h>
 #include <mutex>
-#include <Util/TimeUtil.h>
+#include "core.h"
 
 class PacketDispatcher;
 
-class ServerSession : public hlib::net::Session
+class ServerSession : public core::Session
 {
 public:
 	ServerSession(PacketDispatcher& dispatcher);
@@ -30,7 +29,7 @@ public:
 	void SetSendTime()
 	{
 		std::lock_guard lock(timeMtx_);
-		lastSendTime_ = hlib::Time::NowSteady();
+		lastSendTime_ = core::Time::NowSteady();
 	}
 
 	void TimeOff()
@@ -42,13 +41,13 @@ public:
 	bool IsSendTimeout()
 	{
 		std::lock_guard lock(timeMtx_);
-		return hlib::Time::IsExpired(lastSendTime_, 5000);
+		return core::Time::IsExpired(lastSendTime_, 5000);
 	}
 
 private:
 	PacketDispatcher& packetDispatcher_;
 
-	hlib::Time::steady_time lastSendTime_;
+	core::Time::steady_time lastSendTime_;
 	std::mutex timeMtx_;
 };
 

@@ -1,17 +1,15 @@
-#include "Server.h"
+﻿#include "Server.h"
 #include <memory>
-#include <Log.h>
-#include <Memory/Allocator.h>
 #include "Server/ServerSession.h"
 
-Server::Server(hlib::net::NetClientConfig config) 
+Server::Server(core::NetClientConfig config)
 	: threadPool_(jobQueue_, 3),
 	scheduler_(jobQueue_),
 	packetHandler_(scheduler_),
 	packetDispatcher_(packetHandler_),
 	netService_(config,
 				jobQueue_,
-				[this]() -> std::shared_ptr<ServerSession> { return hlib::MakeSharedPtr<ServerSession>(this->packetDispatcher_); })
+				[this]() -> std::shared_ptr<ServerSession> { return core::MakeSharedPtr<ServerSession>(this->packetDispatcher_); })
 {
 }
 

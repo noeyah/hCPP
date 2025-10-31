@@ -1,7 +1,4 @@
-﻿#include <WinCommon.h>
-#include <Memory/Memory.h>
-#include <Network/NetConfig.h>
-#include <Command/CmdService.h>
+﻿#include "core.h"
 #include "Server.h"
 #include "Packet/PacketRegister.h"
 
@@ -10,11 +7,11 @@ int main()
 	SetConsoleOutputCP(CP_UTF8);
 	SetConsoleCP(CP_UTF8);
 
-	hlib::Memory::Instance();
+	core::Memory::Instance();
 	PacketRegister::Initialize();
 
 
-	hlib::net::NetClientConfig config;
+	core::NetClientConfig config;
 	config.name = "dummy client";
 	config.ip = "127.0.0.1";
 	config.port = 7777;
@@ -23,9 +20,9 @@ int main()
 	Server server(config);
 	server.Start();
 
-	hlib::cmd::CmdService cmdService;
+	core::CmdService cmdService;
 	cmdService.RegisterCommand("exit", "exit server",
-							   [&server, &cmdService](const hlib::cmd::CommandArgs& args) {
+							   [&server, &cmdService](const core::CommandArgs& args) {
 									server.Stop();
 									cmdService.Exit();
 								});
