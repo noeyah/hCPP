@@ -3,7 +3,7 @@
 #include "Client/ClientSession.h"
 
 MainServer::MainServer(core::NetServerConfig config)
-	: threadPool_(jobQueue_),
+	: threadPool_(jobQueue_, 1),
 	scheduler_(jobQueue_),
 	netService_(config, 
 				jobQueue_,

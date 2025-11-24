@@ -64,7 +64,7 @@ namespace hlib::task
 
 				for (auto it = scheduleMap_.begin(); it != end_it; it++)
 				{
-					expiredJobs.push_back(std::move(it->second));
+					expiredJobs.emplace_back(std::move(it->second));
 				}
 
 				if (!expiredJobs.empty())

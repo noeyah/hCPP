@@ -67,7 +67,7 @@ namespace hlib::cmd
 
 		while (stream >> buffer)
 		{
-			args.push_back(buffer);
+			args.emplace_back(buffer);
 		}
 	}
 

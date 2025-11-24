@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <memory>
 
 #include "Container.h"
@@ -28,8 +28,8 @@ namespace hlib
 				T* objPtr = CreateNew();
 				if (objPtr)
 				{
-					pool_.push_back(objPtr);
-					all_.push_back(objPtr);
+					pool_.emplace_back(objPtr);
+					all_.emplace_back(objPtr);
 				}
 			}
 		}
@@ -64,7 +64,7 @@ namespace hlib
 				ASSERT_CRASH(objPtr);
 
 				Lock lock(spin_);
-				all_.push_back(objPtr);
+				all_.emplace_back(objPtr);
 			}
 
 			auto deleter = [this](T* obj) {this->Return(obj); };
@@ -72,7 +72,7 @@ namespace hlib
 			return std::shared_ptr<T>(objPtr, deleter);
 		}
 
-		// º¹»ç/ÀÌµ¿ ºÒ°¡
+		// ë³µì‚¬/ì´ë™ ë¶ˆê°€
 		ObjectPool(const ObjectPool&) = delete;
 		ObjectPool& operator=(const ObjectPool&) = delete;
 		ObjectPool(ObjectPool&&) = delete;
@@ -87,7 +87,7 @@ namespace hlib
 			}
 			else
 			{
-				// T°¡ Ãß»óÅ¬·¡½º°¡ ¾Æ´Ï°í, ±âº» »ı¼ºÀÚ°¡ ÀÖ´Â °æ¿ì¸¸ ±âº» »ı¼º
+				// Tê°€ ì¶”ìƒí´ë˜ìŠ¤ê°€ ì•„ë‹ˆê³ , ê¸°ë³¸ ìƒì„±ìê°€ ìˆëŠ” ê²½ìš°ë§Œ ê¸°ë³¸ ìƒì„±
 				if constexpr (!std::is_abstract_v<T> && std::is_default_constructible_v<T>)
 				{
 					try
@@ -111,7 +111,7 @@ namespace hlib
 			ASSERT_CRASH(objPtr);
 
 			Lock lock(spin_);
-			pool_.push_back(objPtr);
+			pool_.emplace_back(objPtr);
 		}
 
 	private:

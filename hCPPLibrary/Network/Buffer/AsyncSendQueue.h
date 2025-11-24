@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 #include <memory>
 #include <mutex>
 
@@ -23,7 +23,7 @@ namespace hlib::net
 		bool IsEmpty() const;
 		size_t GetQueueSize() const;
 
-		// ∫πªÁ/¿Ãµø ∫“∞°
+		// Î≥µÏÇ¨/Ïù¥Îèô Î∂àÍ∞Ä
 		AsyncSendQueue(const AsyncSendQueue&) = delete;
 		AsyncSendQueue& operator=(const AsyncSendQueue&) = delete;
 		AsyncSendQueue(AsyncSendQueue&&) = delete;
@@ -31,6 +31,6 @@ namespace hlib::net
 
 	private:
 		Deque<std::shared_ptr<PacketBuffer>> queue_;
-		mutable std::mutex mtx_;
+		mutable std::recursive_mutex mtx_;
 	};
 }

@@ -1,4 +1,4 @@
-#include "SocketPool.h"
+﻿#include "SocketPool.h"
 
 #include "Util/Macro.h"
 #include "Task/IJobQueue.h"
@@ -15,7 +15,7 @@ namespace hlib::net
 		{
 			SOCKET sock = sock::Create();
 			ASSERT_CRASH(sock != INVALID_SOCKET);
-			pool_.push_back(sock);
+			pool_.emplace_back(sock);
 		}
 	}
 
@@ -51,7 +51,7 @@ namespace hlib::net
 			return;
 
 		Lock lock(spin_);
-		pool_.push_back(sock);
+		pool_.emplace_back(sock);
 	}
 
 	void SocketPool::CheckRefillTrigger()
@@ -80,13 +80,13 @@ namespace hlib::net
 		{
 			SOCKET sock = sock::Create();
 			ASSERT_CRASH(sock != INVALID_SOCKET);
-			newSocket.push_back(sock);
+			newSocket.emplace_back(sock);
 		}
 
 		Lock lock(spin_);
 		for (SOCKET sock : newSocket)
 		{
-			pool_.push_back(sock);
+			pool_.emplace_back(sock);
 		}
 	}
 

@@ -76,7 +76,7 @@ namespace hlib::net
 			for (auto& [id, session] : sessions_)
 			{
 				if (session)
-					sessions.push_back(session);
+					sessions.emplace_back(session);
 			}
 		}
 

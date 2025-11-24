@@ -1,4 +1,4 @@
-#include "AsyncSendQueue.h"
+﻿#include "AsyncSendQueue.h"
 
 #include "Util/Macro.h"
 #include "PacketBuffer.h"
@@ -16,7 +16,7 @@ namespace hlib::net
 			return;
 
 		std::lock_guard lock(mtx_);
-		queue_.push_back(std::move(buffer));
+		queue_.emplace_back(buffer);
 	}
 
 	void AsyncSendQueue::PrepareSend(OUT Vector<WSABUF>& wsaBufs, size_t maxSize, OUT size_t& sendCount, OUT size_t& sendBytes)

@@ -37,8 +37,8 @@ namespace hlib::db
 			DBConnection* conn = new DBConnection;
 			conn->Connect(env_, connectionStr);
 
-			all_.push_back(std::unique_ptr<DBConnection>(conn));
-			pool_.push_back(conn);
+			all_.emplace_back(std::unique_ptr<DBConnection>(conn));
+			pool_.emplace_back(conn);
 		}
 	}
 
@@ -67,6 +67,6 @@ namespace hlib::db
 		conn->Unbind();
 
 		std::lock_guard lock(mtx_);
-		pool_.push_back(conn);
+		pool_.emplace_back(conn);
 	}
 }

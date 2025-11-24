@@ -42,7 +42,7 @@ namespace hlib::log
 		void AddStream(std::shared_ptr<ILogStream> stream)
 		{
 			std::lock_guard lock(mtx_);
-			logStreams_.push_back(stream);
+			logStreams_.emplace_back(stream);
 		}
 
 		void ClearStream()

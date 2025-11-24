@@ -118,7 +118,7 @@ namespace hlib::net
 		SendContext sendContext_;
 		AsyncSendQueue sendQueue_;
 		std::atomic_bool isSending_ = false;
-		std::mutex sendMtx_;
+		std::recursive_mutex sendMtx_;
 
 #ifdef _DEBUG
 		inline static std::atomic_uint64_t constructionCnt_ = 0;

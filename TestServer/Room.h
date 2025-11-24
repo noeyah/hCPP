@@ -22,7 +22,7 @@ private:
 	core::Vector<std::shared_ptr<ClientSession>> GetSessionPtrs(uint64_t excludeId) const;
 
 private:
-	mutable std::mutex mtx_;
+	mutable std::recursive_mutex mtx_;
 	std::unordered_map<uint64_t, User> users_;
 
 };

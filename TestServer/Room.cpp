@@ -50,7 +50,7 @@ core::Vector<std::shared_ptr<ClientSession>> Room::GetSessionPtrs(uint64_t exclu
 
 		if (auto session = pair.second.GetWeakPtr().lock())
 		{
-			ptrs.push_back(session);
+			ptrs.emplace_back(session);
 		}
 	}
 
