@@ -2,25 +2,19 @@
 
 ## ✨ 프로젝트 개요
 
-- C++, C#으로 서버 개발에 필요한 네트워크, 태스크 등의 기능을 구현한 프로젝트입니다.
-
-- 구현한 라이브러리를 사용하여 동일한 프로토콜로 통신하는 C++ 채팅 서버와 C# 채팅 서버를 각각 제작했습니다. 
-- C#으로 작성된 클라이언트는 두 서버 중 하나에 선택적으로 접속할 수 있습니다.
+ C++/C# 서버 개발을 위해 설계한 범용 라이브러리입니다.
+ 구현한 라이브러리를 사용하여 동일한 프로토콜로 통신하는 C++ 채팅 서버와 C# 채팅 서버를 각각 제작했습니다. 
+ C#으로 작성된 클라이언트는 두 서버 중 하나에 선택적으로 접속할 수 있습니다.
 
 ### 📌 주요 기능
-- 📚 C++ 라이브러리
+- C++ 라이브러리
 	- IOCP 기반 비동기 네트워크
-	- Job Queue를 이용한 비동기 처리
-	- ODBC를 사용한 DB 연결 및 쿼리 실행
-	- ✔ GTest : Google Test를 사용한 유닛 테스트
-- 📘 C# 라이브러리
+	- 스레드풀 + Job Queue 기반 작업 분배
+	- 스핀락, Reader-Writer Lock 등 동시성 도구 구현
+	- 비동기 로깅 및 ODBC DB 연결  풀 제공
+	- ✔GTest : Google Test를 사용한 유닛 테스트
+- C# 라이브러리
 	- SocketAsyncEventArgs 기반 비동기 네트워크
-- 🖥 구현 애플리케이션
-	- C++ 채팅 서버 및 C# 채팅 서버
-	- C# WinForm 채팅 클라이언트
-	- C++ 테스트용 클라이언트
-- 🛠 개발 도구
-	- Python/Jinja2 스크립트를 이용한 코드 생성
 
 ### 💻 개발 환경
 - OS : Windows 10
@@ -105,14 +99,6 @@ hCPP
 ![GTest](https://github.com/user-attachments/assets/6a9370b3-fb66-44b4-9bce-a2f8ec7d875d)
 
 
-### Packet
-
-- 패킷 저장소
-- Python 스크립트를 사용하여 proto 파일에서 추출한 메시지로 PacketID, 패킷 매핑, Enum 문자열 변환 등 C++, C# 코드를 생성합니다.
-
-![ProtoToCode](https://github.com/user-attachments/assets/24b19802-524b-462a-a339-352ad18cdca0)
-
-
 ### TestClient : WinForm 클라이언트
 
 - C# 네트워크 라이브러리 기능 검증을 위한 클라이언트
@@ -121,98 +107,6 @@ hCPP
 ![TestClient](https://github.com/user-attachments/assets/0cf0df3b-1b1c-4669-908f-87338a02eb75)
 
 
-
-## 라이브러리 사용 예시
-
-### hCPPLibrary
-
-#### Task
-
-- 잡큐에 작업 등록
-```cpp
-#include "core.h"
-
-IJobQueue& jobQueue_;
-
-PushJob(jobQueue_, [](){
-	// 스레드풀의 워커 스레드에 의해 실행될 작업
-	std::cout << “Hello” << std::endl;
-});
-```
-- 스케줄러를 통한 예약 작업 등록
-```cpp
-#include "core.h"
-
-// Scheduler 객체에 IJobQueue 주입 필요
-scheduler_.PushAfter(1234, [](){
-	// 1234ms 후 스레드풀의 워커 스레드에 의해 실행될 작업
-	std::cout << “World” << std::endl;
-});
-```
-
-#### Database
-
-- 커넥션풀 세팅 이후 Select 예시
-```cpp
-#include "DB/DBConnectionPool.h"
-#include "DB/DBConnection.h"
-#include "DB/DBQuery.h"
-
-auto conn = pool_.Pop();
-DBQuery<1, 2> query(*conn.get(), “SELECT ?, ? FROM ... WHERE ... = ?”);
-query.Param(1, param1)
-	.Column(1, col1)
-	.Column(2, col2); 
-query.Execute();
-while (query.Fetch())
-{
-	// row data (col1, col2)
-}
-// 이후 conn 스마트 포인터 소멸 시 풀에 자동 반납
-```
-
-#### Network
-
-- NetServer 초기화 및 시작 예시
-```cpp
-#include "core.h"
-
-class MainServer
-{
-public:
-	MainServer(NetServerConfig config) 
-		: threadPool_(jobQueue_), 
-		// NetServer에 NetServerConfig, IJobQueue, Session 팩토리 주입
-		netServer_(config, jobQueue_, []() -> std::shared_ptr<ClientSession> {
-			// 사용자 Session 팩토리
-			return MakeSharedPtr<ClientSession>(); 
-		}) 
-	{
-	}
-	void Start()
-	{
-		threadPool_.Start();
-		netServer_.Start();
-	}
-private:
-	JobQueue jobQueue_;
-	ThreadPool threadPool_;
-	NetServer netServer_;
-}
-```
-- 사용자가 Session 클래스 가상 함수 재정의
-```cpp
-#include "core.h"
-
-class ClientSession : public Session
-{
-protected:
-	// 재정의 필요
-	virtual void OnConnected() override;
-	virtual void OnDisconnected() override;
-	virtual void OnReceiveainServer(uint16_t packetId, std::span<const std::byte> packet) override;
-}
-```
 
 ## 참고 자료 및 출처
 - [google test](https://github.com/google/googletest)
