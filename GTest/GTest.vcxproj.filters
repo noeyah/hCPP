@@ -33,9 +33,6 @@
     <ClCompile Include="libTest\TEST_WorkerThread.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="libTest\TEST_PacketBuffer.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="libTest\TEST_LockedQueue.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -43,9 +40,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="libTest\TEST_ObjectPool.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="libTest\TEST_AsyncSendQueue.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="libTest\TEST_Random.cpp">
@@ -58,6 +52,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="..\include\googletest\src\gtest-all.cc">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="libTest\TEST_SendBuffer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

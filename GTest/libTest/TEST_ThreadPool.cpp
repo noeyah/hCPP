@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 #include <atomic>
 #include <chrono>
 #include <thread>
@@ -10,13 +10,13 @@
 class ThreadPoolTest : public ::testing::Test
 {
 protected:
-	std::unique_ptr<hlib::task::JobQueue> jobQueue_;
-	std::unique_ptr<hlib::task::ThreadPool> threadPool_;
+	std::unique_ptr<hlib::JobQueue> jobQueue_;
+	std::unique_ptr<hlib::ThreadPool> threadPool_;
 
 	void SetUp() override
 	{
-		jobQueue_ = std::make_unique<hlib::task::JobQueue>();
-		threadPool_ = std::make_unique<hlib::task::ThreadPool>(*jobQueue_, 4);
+		jobQueue_ = std::make_unique<hlib::JobQueue>();
+		threadPool_ = std::make_unique<hlib::ThreadPool>(*jobQueue_, 4);
 	}
 
 	void TearDown() override
@@ -36,7 +36,7 @@ TEST_F(ThreadPoolTest, Basic)
 	auto lambda = [&job_executed]() {
 		job_executed.store(true);
 	};
-	auto job_ptr = std::make_shared<hlib::task::Job<decltype(lambda)>>(std::move(lambda));
+	auto job_ptr = std::make_shared<hlib::Job<decltype(lambda)>>(std::move(lambda));
 
 	ASSERT_NO_THROW(jobQueue_->Push(job_ptr));
 

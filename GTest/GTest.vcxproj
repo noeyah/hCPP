@@ -144,12 +144,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\include\googletest\src\gtest-all.cc" />
-    <ClCompile Include="libTest\TEST_AsyncSendQueue.cpp" />
     <ClCompile Include="libTest\TEST_Database.cpp" />
     <ClCompile Include="libTest\TEST_LockedQueue.cpp" />
     <ClCompile Include="libTest\TEST_Memory.cpp" />
     <ClCompile Include="libTest\TEST_ObjectPool.cpp" />
-    <ClCompile Include="libTest\TEST_PacketBuffer.cpp" />
     <ClCompile Include="libTest\TEST_Random.cpp" />
     <ClCompile Include="libTest\TEST_SharedSpinLock.cpp" />
     <ClCompile Include="libTest\TEST_Scheduler.cpp" />
@@ -157,6 +155,7 @@
     <ClCompile Include="libTest\TEST_ThreadPool.cpp" />
     <ClCompile Include="libTest\TEST_Time.cpp" />
     <ClCompile Include="libTest\TEST_WorkerThread.cpp" />
+    <ClCompile Include="libTest\TEST_SendBuffer.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>

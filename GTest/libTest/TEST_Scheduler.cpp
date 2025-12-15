@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 #include <thread>
 #include <atomic>
 #include <chrono>
@@ -11,15 +11,15 @@
 class SchedulerTest : public ::testing::Test
 {
 protected:
-	std::unique_ptr<hlib::task::JobQueue> jobQueue_;
-	std::unique_ptr<hlib::task::ThreadPool> threadPool_;
-	std::unique_ptr<hlib::task::Scheduler> scheduler_;
+	std::unique_ptr<hlib::JobQueue> jobQueue_;
+	std::unique_ptr<hlib::ThreadPool> threadPool_;
+	std::unique_ptr<hlib::Scheduler> scheduler_;
 
 	void SetUp() override
 	{
-		jobQueue_ = std::make_unique<hlib::task::JobQueue>();
-		threadPool_ = std::make_unique<hlib::task::ThreadPool>(*jobQueue_, 4);
-		scheduler_ = std::make_unique<hlib::task::Scheduler>(*jobQueue_);
+		jobQueue_ = std::make_unique<hlib::JobQueue>();
+		threadPool_ = std::make_unique<hlib::ThreadPool>(*jobQueue_, 4);
+		scheduler_ = std::make_unique<hlib::Scheduler>(*jobQueue_);
 	}
 
 	void TearDown() override
