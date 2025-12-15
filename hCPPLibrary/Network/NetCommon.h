@@ -1,10 +1,10 @@
-#pragma once
+Ôªø#pragma once
 #include <cstdint>
 #include <vector>
 #include <memory>
 #include "WinCommon.h"
 
-namespace hlib::net
+namespace hlib
 {
 	struct PacketHeader
 	{
@@ -14,8 +14,8 @@ namespace hlib::net
 
 	using SessionId = uint64_t;
 
-	// πˆ∆€ √÷¥Î ≈©±‚
-	inline constexpr size_t MAX_BUFFER_SIZE = 4096;
+	// Î≤ÑÌçº ÏµúÎåÄ ÌÅ¨Í∏∞
+	inline constexpr size_t MAX_BUFFER_SIZE = 2048;
 
 	inline constexpr size_t HEADER_SIZE = sizeof(PacketHeader);
 }

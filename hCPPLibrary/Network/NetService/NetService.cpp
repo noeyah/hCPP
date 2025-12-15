@@ -1,35 +1,35 @@
-#include "NetService.h"
+﻿#include "NetService.h"
 #include "Task/IJobQueue.h"
 #include "Util/Macro.h"
 #include "Network/WinsockSetup.h"
 
-namespace hlib::net
+namespace hlib
 {
-	NetService::NetService(NetConfig config, task::IJobQueue& jobQueue, SessionManager::SessionFactory factory)
-		: netConfig_(config), 
-		iocpDispatcher_(jobQueue), 
-		sessionManager_(iocpDispatcher_.GetHandle(), std::move(factory))
+	NetService::NetService(NetConfig config, IJobQueue& jobQueue)
+		: m_config(config), 
+		m_dispatcher(jobQueue), 
+		m_sessionMgr(m_dispatcher.GetHandle())
 	{
 		WinsockSetup::Instance();
 
-		address_.sin_family = AF_INET;
-		if (inet_pton(AF_INET, config.ip.c_str(), &address_.sin_addr) <= 0)
+		m_address.sin_family = AF_INET;
+		if (inet_pton(AF_INET, config.ip.c_str(), &m_address.sin_addr) <= 0)
 		{
 			CRASH("ip error");
 			return;
 		}
 
-		address_.sin_port = htons(config.port);
+		m_address.sin_port = htons(config.port);
 	}
 
-	bool NetService::Start()
+	bool NetService::InternalStart()
 	{
-		ASSERT_CRASH(netConfig_.ioThreadCount > 0);
+		ASSERT_CRASH(m_config.ioThreadCount > 0);
 
-		if (isRunning_.exchange(true))
+		if (m_bRunning.exchange(true))
 			return false;
 
-		iocpDispatcher_.Start(netConfig_.ioThreadCount);
+		m_dispatcher.Start(m_config.ioThreadCount);
 
 		if (!InitSocket())
 		{
@@ -41,12 +41,11 @@ namespace hlib::net
 
 	void NetService::Stop()
 	{
-		if (!isRunning_.exchange(false))
+		if (!m_bRunning.exchange(false))
 			return;
 
 		CloseSocket();
-		//sessionManager_.Close();
-		iocpDispatcher_.Stop();
+		//m_sessionMgr.Close();
+		m_dispatcher.Stop();
 	}
-
 }

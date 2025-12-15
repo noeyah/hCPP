@@ -1,19 +1,16 @@
-#include "NetServer.h"
+﻿#include "NetServer.h"
 #include "Network/Connection/Listener.h"
 #include "Log.h"
 
-namespace hlib::net
+namespace hlib
 {
-	NetServer::NetServer(NetServerConfig config, task::IJobQueue& jobQueue, SessionManager::SessionFactory factory)
-		: NetService(config, jobQueue, std::move(factory)),
-		serverConfig_(config), 
-		socketPool_(config.socketPoolInitCount, jobQueue)
+	NetServer::NetServer(NetServerConfig config, IJobQueue& jobQueue)
+		: NetService(config, jobQueue),
+		m_serverConfig(config)
 	{
-		listener_ = std::make_shared<Listener>(iocpDispatcher_.GetHandle(), socketPool_, sessionManager_);
-
-		sessionManager_.SetReturnSockCallback([this](SOCKET sock) { 
-			this->socketPool_.Return(sock); 
-		});
+		m_pListener = std::make_shared<Listener>(
+			m_dispatcher.GetHandle(), 
+			[this](SOCKET s, const SOCKADDR_IN* addr) { m_sessionMgr.CreateAndStart(s, addr); });
 	}
 
 	NetServer::~NetServer()
@@ -23,7 +20,7 @@ namespace hlib::net
 
 	bool NetServer::InitSocket()
 	{
-		if (!listener_->Start(address_, serverConfig_.acceptCount, serverConfig_.backlog))
+		if (!m_pListener->Start(m_address, m_serverConfig.acceptCount, m_serverConfig.backlog))
 		{
 			return false;
 		}
@@ -33,10 +30,10 @@ namespace hlib::net
 
 	void NetServer::CloseSocket()
 	{
-		if (listener_)
+		if (m_pListener)
 		{
-			listener_->Stop();
-			listener_.reset();
+			m_pListener->Stop();
+			m_pListener.reset();
 		}
 	}
 }

@@ -1,20 +1,13 @@
-#include "Listener.h"
+﻿#include "Listener.h"
 
 #include "Network/InternalNetwork.h"
 #include "Util/Macro.h"
 #include "Network/Socket/SocketUtil.h"
 #include "Network/Core/IoContext.h"
-#include "Network/Socket/SocketPool.h"
-#include "Network/Connection/SessionManager.h"
 #include "Log.h"
 
-namespace hlib::net
+namespace hlib
 {
-	Listener::Listener(HANDLE handle, SocketPool& sockProvider, SessionManager& sessionManager)
-		: iocpHandle_(handle), socketPool_(sockProvider), sessionManager_(sessionManager)
-	{
-	}
-
 	Listener::~Listener()
 	{
 		Stop();
@@ -22,37 +15,29 @@ namespace hlib::net
 
 	bool Listener::Start(const SOCKADDR_IN& bindAddr, size_t acceptCount, int32_t backlog)
 	{
-		if (isListening_.exchange(true))
+		if (m_bRunning.exchange(true))
 			return false;
 
-		listenSocket_ = sock::Create();
-		ASSERT_CRASH(listenSocket_ != INVALID_SOCKET);
+		m_socket = sock::Create();
+		ASSERT_CRASH(m_socket != INVALID_SOCKET);
 
-		if (!sock::SetReuseAddress(listenSocket_, true))
-		{
+		if (!sock::SetReuseAddress(m_socket, true))
 			CRASH("listener socket reuse failed - {}", ::WSAGetLastError());
-		}
 
-		if (!sock::Bind(listenSocket_, bindAddr))
-		{
+		if (!sock::Bind(m_socket, bindAddr))
 			CRASH("listener socket bind failed - {}", ::WSAGetLastError());
-		}
 
-		if (!sock::Listen(listenSocket_, backlog))
-		{
+		if (!sock::Listen(m_socket, backlog))
 			CRASH("listener socket listen failed - {}", ::WSAGetLastError());
-		}
 
-		if (!sock::RegisterIoCompletionPort(iocpHandle_, listenSocket_, 0))
-		{
+		if (!sock::RegisterIoCompletionPort(m_handle, m_socket, 0))
 			CRASH("listener socket register io failed - {}", ::WSAGetLastError());
-		}
 		
-		acceptContexts_.reserve(acceptCount);
+		m_lstContext.reserve(acceptCount);
 		for (size_t i = 0; i < acceptCount; i++)
 		{
-			acceptContexts_.emplace_back(std::make_unique<AcceptContext>());
-			AcceptAsync(acceptContexts_.back().get());
+			m_lstContext.emplace_back(std::make_unique<AcceptContext>());
+			AcceptAsync(m_lstContext.back().get());
 		}
 
 		LOG_INFO("listener start {}", acceptCount);
@@ -61,20 +46,18 @@ namespace hlib::net
 
 	void Listener::Stop()
 	{
-		if (!isListening_.exchange(false))
+		if (!m_bRunning.exchange(false))
 			return;
 
-		CancelIoEx(reinterpret_cast<HANDLE>(listenSocket_), NULL);
-		sock::Close(listenSocket_);
+		CancelIoEx(reinterpret_cast<HANDLE>(m_socket), NULL);
+		sock::Close(m_socket);
 		LOG_INFO("listener stop");
 	}
 
 	void Listener::CompletedAsync(IoContext* context, DWORD bytesTransferred)
 	{
 		if (context->ioOperation != IoOperation::Accept)
-		{
 			return;
-		}
 
 		AcceptCompleted(static_cast<AcceptContext*>(context));
 	}
@@ -82,36 +65,26 @@ namespace hlib::net
 	void Listener::ErrorHandler(IoContext* context, int32_t wsaErrorCode)
 	{
 		if (wsaErrorCode == ERROR_OPERATION_ABORTED)
-		{
 			LOG_WARN("listener accept cancel");
-		}
 		else
-		{
 			LOG_ERROR("listener io error : {}", wsaErrorCode);
-		}
 	}
 
 	void Listener::AcceptAsync(AcceptContext* acceptContext)
 	{
 		acceptContext->Reset();
 
-		if (!isListening_.load())
-		{
+		if (!m_bRunning.load())
 			return;
-		}
 
-		SOCKET clientSocket;
-		if (!socketPool_.TryGet(&clientSocket))
-		{
-			LOG_WARN("socket provider is empty");
-			return;
-		}
+		SOCKET sock = sock::Create();
+		ASSERT_CRASH(sock != INVALID_SOCKET);
 
 		acceptContext->ioHandler = shared_from_this();
-		acceptContext->clientSocket = clientSocket;
+		acceptContext->clientSocket = sock;
 
 		DWORD bytesReceived = 0;
-		auto ret = AcceptEx(listenSocket_,
+		auto ret = AcceptEx(m_socket,
 							acceptContext->clientSocket,
 							acceptContext->clientAddressBuffer.data(),
 							0,
@@ -126,7 +99,7 @@ namespace hlib::net
 			if (errorCode != WSA_IO_PENDING)
 			{
 				LOG_ERROR("accept error : {}", errorCode);
-				sock::Close(clientSocket);
+				sock::Close(sock);
 				return;
 			}
 		}
@@ -134,9 +107,9 @@ namespace hlib::net
 
 	void Listener::AcceptCompleted(AcceptContext* context)
 	{
-		SOCKET clientSocket = context->clientSocket;
+		SOCKET sock = context->clientSocket;
 
-		if (!sock::SetUpdateAcceptContext(clientSocket, listenSocket_))
+		if (!sock::SetUpdateAcceptContext(sock, m_socket))
 		{
 			CRASH("SetUpdateAcceptContext failed - {}", ::WSAGetLastError());
 		}
@@ -155,8 +128,9 @@ namespace hlib::net
 							 &remoteAddr,
 							 &remoteAddrLength);
 
-		auto clientAddr = reinterpret_cast<SOCKADDR_IN*>(remoteAddr);
-		sessionManager_.CreateAndStart(clientSocket, clientAddr);
+		auto addr = reinterpret_cast<SOCKADDR_IN*>(remoteAddr);
+		if (m_callback)
+			m_callback(sock, addr);
 
 		AcceptAsync(context);
 	}

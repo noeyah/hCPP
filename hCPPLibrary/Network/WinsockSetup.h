@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Util/Singleton.h"
 
-namespace hlib::net
+namespace hlib
 {
 	class WinsockSetup : public Singleton<WinsockSetup>
 	{

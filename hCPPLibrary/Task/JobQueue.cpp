@@ -1,20 +1,20 @@
 ﻿#include "JobQueue.h"
 
-namespace hlib::task
+namespace hlib
 {
 	void JobQueue::Stop()
 	{
 		queue_.RequestStop();
 	}
 
-	void JobQueue::Push(IJob::SharedPtr job)
+	void JobQueue::Push(std::shared_ptr<IJob> job)
 	{
 		queue_.Push(std::move(job));
 	}
 
-	IJob::SharedPtr JobQueue::Pop()
+	std::shared_ptr<IJob> JobQueue::Pop()
 	{
-		IJob::SharedPtr job;
+		std::shared_ptr<IJob> job;
 		if (!queue_.WaitPop(job))
 			return nullptr;
 

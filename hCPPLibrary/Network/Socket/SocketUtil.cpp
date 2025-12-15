@@ -1,7 +1,7 @@
-#include "SocketUtil.h"
+ï»¿#include "SocketUtil.h"
 #include "Util/Macro.h"
 
-namespace hlib::net::sock
+namespace hlib::sock
 {
 	SOCKET Create()
 	{
@@ -90,8 +90,8 @@ namespace hlib::net::sock
 	bool SetLinger(SOCKET socket, uint16_t onoff, uint16_t lingerTime)
 	{
 		LINGER option;
-		option.l_onoff = onoff;		// 0ÀÌ¸é ²û. µğÆúÆ® 0
-		option.l_linger = lingerTime;	// ¿É¼ÇÀÌ ÄÑÁ®ÀÖÀ» ¶§ ´ë±âÇÒ ½Ã°£(ÃÊ)
+		option.l_onoff = onoff;		// 0ì´ë©´ ë”. ë””í´íŠ¸ 0
+		option.l_linger = lingerTime;	// ì˜µì…˜ì´ ì¼œì ¸ìˆì„ ë•Œ ëŒ€ê¸°í•  ì‹œê°„(ì´ˆ)
 		return setsockopt(socket,
 						  SOL_SOCKET,
 						  SO_LINGER,
@@ -103,7 +103,7 @@ namespace hlib::net::sock
 	{
 		// 1 : nodelay
 		// 0 : nagle
-		// µğÆúÆ® 0
+		// ë””í´íŠ¸ 0
 		return setsockopt(socket,
 						  IPPROTO_TCP,
 						  TCP_NODELAY,

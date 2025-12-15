@@ -2,74 +2,42 @@
 #include <memory>
 
 #include "Container.h"
-#include "Util/Macro.h"
 #include "Lock.h"
 
 namespace hlib
 {
 	template<typename T>
-	class IObjectFactory
-	{
-	public:
-		virtual ~IObjectFactory() = default;
-		virtual T* Create() = 0;
-	};
-
-	template<typename T>
 	class ObjectPool
 	{
+		SpinLock spin_;
+		Vector<std::shared_ptr<T>> pool_;
+
 	public:
-		ObjectPool(std::unique_ptr<IObjectFactory<T>> factory, size_t initSize) : factory_(std::move(factory))
+		ObjectPool() = default;
+
+		template<typename... Args>
+		std::shared_ptr<T> Get(Args&&... args)
 		{
-			pool_.reserve(initSize);
-			all_.reserve(initSize);
-			for (size_t i = 0; i < initSize; i++)
+			Lock lock(spin_);
+
+			if (pool_.empty())
 			{
-				T* objPtr = CreateNew();
-				if (objPtr)
-				{
-					pool_.emplace_back(objPtr);
-					all_.emplace_back(objPtr);
-				}
+				return std::make_shared<T>(std::forward<Args>(args)...);
 			}
+
+			auto pObj = std::move(pool_.back());
+			pool_.pop_back();
+
+			return pObj;
 		}
 
-		~ObjectPool()
+		void Return(std::shared_ptr<T> pObj)
 		{
-			for (T* objPtr : all_)
-			{
-				delete objPtr;
-			}
+			if (!pObj)
+				return;
 
-			pool_.clear();
-			all_.clear();
-		}
-
-		std::shared_ptr<T> Get()
-		{
-			T* objPtr = nullptr;
-
-			{
-				Lock lock(spin_);
-				if (!pool_.empty())
-				{
-					objPtr = pool_.back();
-					pool_.pop_back();
-				}
-			}
-
-			if (!objPtr)
-			{
-				objPtr = CreateNew();
-				ASSERT_CRASH(objPtr);
-
-				Lock lock(spin_);
-				all_.emplace_back(objPtr);
-			}
-
-			auto deleter = [this](T* obj) {this->Return(obj); };
-
-			return std::shared_ptr<T>(objPtr, deleter);
+			Lock lock(spin_);
+			pool_.emplace_back(std::move(pObj));
 		}
 
 		// 복사/이동 불가
@@ -77,50 +45,6 @@ namespace hlib
 		ObjectPool& operator=(const ObjectPool&) = delete;
 		ObjectPool(ObjectPool&&) = delete;
 		ObjectPool& operator=(ObjectPool&&) = delete;
-
-	private:
-		T* CreateNew()
-		{
-			if (factory_)
-			{
-				return factory_->Create();
-			}
-			else
-			{
-				// T가 추상클래스가 아니고, 기본 생성자가 있는 경우만 기본 생성
-				if constexpr (!std::is_abstract_v<T> && std::is_default_constructible_v<T>)
-				{
-					try
-					{
-						return new T();
-					}
-					catch (...)
-					{
-						return nullptr;
-					}
-				}
-				else
-				{
-					return nullptr;
-				}
-			}
-		}
-
-		void Return(T* objPtr)
-		{
-			ASSERT_CRASH(objPtr);
-
-			Lock lock(spin_);
-			pool_.emplace_back(objPtr);
-		}
-
-	private:
-		SpinLock spin_;
-
-		Vector<T*> pool_;
-		Vector<T*> all_;
-
-		std::unique_ptr<IObjectFactory<T>> factory_;
 	};
 
 }

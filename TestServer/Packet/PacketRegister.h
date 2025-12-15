@@ -31,19 +31,21 @@ public:
 		requires std::is_base_of_v<google::protobuf::Message, TPacket>
 	static std::shared_ptr<core::PacketBuffer> Serialize(const TPacket& sendPacket)
 	{
-		size_t packetSize = sendPacket.ByteSizeLong();
-		size_t bufferSize = core::HEADER_SIZE + packetSize;
+		const size_t packetSize = sendPacket.ByteSizeLong();
+		const size_t totalSize = core::HEADER_SIZE + packetSize;
 
-		core::PacketHeader header;
-		header.size = static_cast<uint16_t>(bufferSize);
-		header.id = GetID<TPacket>();
+		auto sendBuffer = core::MakeSharedPtr<core::PacketBuffer>(totalSize);
 
-		auto sendBuffer = core::MakeSharedPtr<core::PacketBuffer>(bufferSize);
-		sendBuffer->Write(reinterpret_cast<const std::byte*>(&header), core::HEADER_SIZE);
+		// 헤더
+		core::PacketHeader* header = reinterpret_cast<core::PacketHeader*>(sendBuffer->WritePos());
+		header->size = static_cast<uint16_t>(totalSize);
+		header->id = GetID<TPacket>();
+		sendBuffer->OnWrite(core::HEADER_SIZE);
 
-		bool success = sendPacket.SerializeToArray(sendBuffer->WritePtr(), static_cast<int>(packetSize));
+		// 바디
+		bool success = sendPacket.SerializeToArray(sendBuffer->WritePos(), static_cast<int>(packetSize));
 		ASSERT_CRASH(success);
-		sendBuffer->CommitWrite(packetSize);
+		sendBuffer->OnWrite(packetSize);
 
 		return sendBuffer;
 	}

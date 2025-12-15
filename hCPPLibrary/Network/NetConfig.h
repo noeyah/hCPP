@@ -1,9 +1,9 @@
-#pragma once
+﻿#pragma once
 #include <cstdint>
 #include <string>
 #include "WinCommon.h"
 
-namespace hlib::net
+namespace hlib
 {
 	struct NetConfig
 	{
@@ -16,7 +16,6 @@ namespace hlib::net
 	struct NetServerConfig : public NetConfig
 	{
 		size_t acceptCount;
-		size_t socketPoolInitCount;
 		int32_t backlog = SOMAXCONN;
 	};
 

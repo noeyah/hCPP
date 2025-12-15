@@ -4,17 +4,17 @@
 
 void ClientSession::OnConnected()
 {
-	LOG_DEBUG("session({}) connected", GetSessionId());
+	LOG_DEBUG("session({}) connected", GetID());
 }
 
 void ClientSession::OnDisconnected()
 {
 	auto session = GetSharedPtr();
-	packetDispatcher_.OnDisconnected(session);
+	PacketDispatcher::Instance()->OnDisconnected(session);
 }
 
 void ClientSession::OnReceive(uint16_t packetId, std::span<const std::byte> packet)
 {
 	auto session = GetSharedPtr();
-	packetDispatcher_.Dispatch(session, static_cast<packet::PacketID>(packetId), packet);
+	PacketDispatcher::Instance()->Dispatch(session, static_cast<packet::PacketID>(packetId), packet);
 }

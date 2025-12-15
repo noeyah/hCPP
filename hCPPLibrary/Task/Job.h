@@ -1,11 +1,11 @@
-#pragma once
+﻿#pragma once
 #include <memory>
 #include <type_traits>
 #include <utility>
 #include <concepts>
 #include "IJobQueue.h"
 
-namespace hlib::task
+namespace hlib
 {
 	template<typename F>
 	class Job : public IJob

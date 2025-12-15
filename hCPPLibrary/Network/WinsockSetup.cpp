@@ -1,11 +1,11 @@
-#include "WinsockSetup.h"
+﻿#include "WinsockSetup.h"
 #include "WinCommon.h"
 #include "Util/Macro.h"
 #include "Network/Socket/SocketUtil.h"
 #include "Network/Connection/Listener.h"
 #include "Network/Connection/Session.h"
 
-namespace hlib::net
+namespace hlib
 {
 	WinsockSetup::WinsockSetup()
 	{
@@ -35,11 +35,6 @@ namespace hlib::net
 		if (!sock::LoadExtensionFunction(tmp, WSAID_CONNECTEX, reinterpret_cast<LPVOID*>(&Session::ConnectEx)))
 		{
 			CRASH("WSAID_CONNECTEX failed - {}", ::WSAGetLastError());
-		}
-
-		if (!sock::LoadExtensionFunction(tmp, WSAID_DISCONNECTEX, reinterpret_cast<LPVOID*>(&Session::DisconnectEx)))
-		{
-			CRASH("WSAID_DISCONNECTEX failed - {}", ::WSAGetLastError());
 		}
 
 		sock::Close(tmp);

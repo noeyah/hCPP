@@ -1,20 +1,19 @@
-#pragma once
+﻿#pragma once
 #include <memory>
 
 #include "NetService.h"
 #include "Network/NetConfig.h"
 
-namespace hlib::task
+namespace hlib
 {
 	class IJobQueue;
-}
 
-namespace hlib::net
-{
 	class NetClient : public NetService
 	{
+		NetClientConfig m_clientConfig;
+
 	public:
-		NetClient(NetClientConfig config, task::IJobQueue& jobQueue, SessionManager::SessionFactory factory);
+		NetClient(NetClientConfig config, IJobQueue& jobQueue);
 		~NetClient();
 
 	protected:
@@ -23,9 +22,6 @@ namespace hlib::net
 
 	private:
 		void Connect();
-
-	private:
-		NetClientConfig clientConfig_;
 	};
 
 }

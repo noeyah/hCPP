@@ -1,28 +1,38 @@
-#pragma once
+﻿#pragma once
 #include <memory>
 #include <cstdint>
 #include <atomic>
 #include <vector>
+#include <functional>
 #include "WinCommon.h"
-#include "Network/Core/IIoCompletionHandler.h"
+#include "Network/Core/IoHandler.h"
 
-namespace hlib::net
+namespace hlib
 {
 	struct AcceptContext;
-
-	class SocketPool;
 	class SessionManager;
 
-	class Listener : public IIoCompletionHandler, public std::enable_shared_from_this<Listener>
+	class Listener 
+		: public IoHandler, 
+		public std::enable_shared_from_this<Listener>
 	{
 		friend class WinsockSetup;
 
+	public:
+		using AcceptCallback = std::function<void(SOCKET, const SOCKADDR_IN*)>;
+		
 	private:
 		inline static LPFN_ACCEPTEX AcceptEx;
 		inline static LPFN_GETACCEPTEXSOCKADDRS GetAcceptExSockAddrs;
 
+		HANDLE m_handle;
+		SOCKET m_socket{ INVALID_SOCKET };
+		std::atomic_bool m_bRunning{ false };
+		std::vector<std::unique_ptr<AcceptContext>> m_lstContext{};
+		AcceptCallback m_callback{};
+
 	public:
-		Listener(HANDLE handle, SocketPool& sockProvider, SessionManager& sessionManager);
+		Listener(HANDLE handle, AcceptCallback callback) : m_handle(handle), m_callback(callback) {}
 		~Listener();
 
 		bool Start(const SOCKADDR_IN& bindAddr, size_t acceptCount, int32_t backlog);
@@ -34,15 +44,6 @@ namespace hlib::net
 	private:
 		void AcceptAsync(AcceptContext* context);
 		void AcceptCompleted(AcceptContext* context);
-
-	private:
-		SOCKET listenSocket_ = INVALID_SOCKET;
-		std::vector<std::unique_ptr<AcceptContext>> acceptContexts_;
-		std::atomic_bool isListening_{ false };
-
-		HANDLE iocpHandle_;
-		SocketPool& socketPool_;
-		SessionManager& sessionManager_;
 	};
 
 }

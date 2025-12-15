@@ -1,8 +1,8 @@
-#include "ThreadPool.h"
+﻿#include "ThreadPool.h"
 #include "IJobQueue.h"
 #include "Job.h"
 
-namespace hlib::task
+namespace hlib
 {
 	ThreadPool::ThreadPool(IJobQueue& jobQueue, uint32_t threadCount)
 		: threadCount_(threadCount), 

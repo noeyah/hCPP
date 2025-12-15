@@ -1,44 +1,109 @@
-#pragma once
+﻿#pragma once
 #include <memory>
 #include <cassert>
 #include "Memory/Buffer.h"
 #include "Util/Macro.h"
 
-namespace hlib::net
+namespace hlib
 {
 	class PacketBuffer
 	{
+		std::byte* m_pBuffer{};
+		size_t m_readPos{};
+		size_t m_writePos{};
+		size_t m_capacity{};
+		bool m_bOwner{ true };
+
 	public:
-		PacketBuffer(size_t size) : capacity_(size), buffer_(Buffer::Get(size))
+		PacketBuffer(size_t size)
 		{
-			ASSERT_CRASH(capacity_ > 0);
+			BufferSize eBufferSize = GetEnumBufferSize(size);
+
+			if (eBufferSize == BufferSize::Dynamic)
+				m_capacity = size;
+			else
+				m_capacity = GetByteSize(eBufferSize);
+
+			m_pBuffer = Buffer::Acquire(m_capacity);
 		}
 
-		void Write(const std::byte* src, size_t size)
+		~PacketBuffer()
 		{
-			ASSERT_CRASH(capacity_ >= usedSize_ + size);
-
-			memcpy(WritePtr(), src, size);
-			usedSize_ += size;
+			if (m_bOwner && m_pBuffer)
+			{
+				Buffer::Release(m_pBuffer, m_capacity);
+				m_pBuffer = nullptr;
+			}
 		}
 
-		void CommitWrite(size_t size)
+		// 이동
+		PacketBuffer(PacketBuffer&& other) noexcept
 		{
-			ASSERT_CRASH(capacity_ >= usedSize_ + size);
-			usedSize_ += size;
+			m_pBuffer = other.m_pBuffer;
+			m_readPos = other.m_readPos;
+			m_writePos = other.m_writePos;
+			m_capacity = other.m_capacity;
+			m_bOwner = other.m_bOwner;
+
+			other.m_pBuffer = nullptr;
+			other.m_bOwner = false;
 		}
 
-		std::byte* WritePtr() const { return buffer_.get() + usedSize_; }
+		// 복사 X
+		PacketBuffer(const PacketBuffer&) = delete;
+		PacketBuffer& operator=(const PacketBuffer&) = delete;
 
-		size_t Size() const { return usedSize_; }
-		std::byte* Data() const { return buffer_.get(); }
-		bool Empty() const { return usedSize_ == 0; }
-		size_t Capacity() const { return capacity_; }
+		std::byte* WritePos() const { return m_pBuffer + m_writePos; }
+		std::byte* ReadPos() const { return m_pBuffer + m_readPos; }
+		size_t FreeSize() const { return m_capacity - m_writePos; }
+		size_t DataSize() const { return m_writePos - m_readPos; }
+		size_t Capacity() const { return m_capacity; }
+		bool Empty() const { return m_readPos == m_writePos; }
 
-	private:
-		std::shared_ptr<std::byte[]> buffer_;
-		size_t usedSize_ = 0;
-		size_t capacity_ = 0;
+		bool OnWrite(size_t size)
+		{
+			if (m_writePos + size > m_capacity)
+				return false;
+
+			m_writePos += size;
+			return true;
+		}
+
+		bool OnRead(size_t size)
+		{
+			if (m_readPos + size > m_writePos)
+				return false;
+
+			m_readPos += size;
+
+			if (m_readPos == m_writePos)
+			{
+				m_readPos = 0;
+				m_writePos = 0;
+			}
+			return true;
+		}
+
+		void Clean()
+		{
+			if (m_readPos == 0)
+				return;
+
+			size_t dataSize = DataSize();
+			if (dataSize > 0)
+			{
+				::memmove(m_pBuffer, ReadPos(), dataSize);
+			}
+
+			m_readPos = 0;
+			m_writePos = dataSize;
+		}
+
+		void Clear()
+		{
+			m_readPos = 0;
+			m_writePos = 0;
+		}
 	};
 
 }

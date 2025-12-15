@@ -162,6 +162,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Client\ClientSession.cpp" />
+    <ClCompile Include="Helper.cpp" />
     <ClCompile Include="MainServer.cpp" />
     <ClCompile Include="Packet\PacketRegister.cpp" />
     <ClCompile Include="Packet\PacketDispatcherInit.cpp" />
@@ -180,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\ClientSession.h" />
+    <ClInclude Include="Helper.h" />
     <ClInclude Include="MainServer.h" />
     <ClInclude Include="Packet\PacketEnums.h" />
     <ClInclude Include="Packet\PacketRegister.h" />

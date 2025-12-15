@@ -1,8 +1,8 @@
-#pragma once
+﻿#pragma once
 #include <iostream>
 #include "WinCommon.h"
 
-namespace hlib::net::sock
+namespace hlib::sock
 {
 	SOCKET Create();
 	void Close(SOCKET& socket);

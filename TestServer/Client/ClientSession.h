@@ -4,18 +4,11 @@
 #include <cstddef>
 #include <cstdint>
 #include <atomic>
-#include "core.h"
 #include <mutex>
-
-class PacketDispatcher;
+#include "core.h"
 
 class ClientSession : public core::Session
 {
-public:
-	ClientSession(PacketDispatcher& dispatcher) : packetDispatcher_(dispatcher)
-	{
-	}
-
 protected:
 	virtual void OnConnected() override;
 	virtual void OnDisconnected() override;
@@ -26,8 +19,5 @@ private:
 	{
 		return std::static_pointer_cast<ClientSession>(shared_from_this());
 	}
-
-private:
-	PacketDispatcher& packetDispatcher_;
 };
 

@@ -1,11 +1,9 @@
-#pragma once
+ï»¿#pragma once
 #include <cstdint>
 #include "WinCommon.h"
 
-namespace hlib::net
+namespace hlib
 {
-	// ³»ºÎ¿ë Á¤ÀÇ
-
 	enum class IoOperation : uint8_t
 	{
 		None,
@@ -16,7 +14,7 @@ namespace hlib::net
 		Send,
 	};
 
-	// winsock¿¡¼­ ÁÖ¼Ò ÀúÀå °ø°£À» ±¸Á¶Ã¼ Å©±â + 16¹ÙÀÌÆ® ÇØ¾ßÇÔ.
+	// winsockì—ì„œ ì£¼ì†Œ ì €ì¥ ê³µê°„ì„ êµ¬ì¡°ì²´ í¬ê¸° + 16ë°”ì´íŠ¸ í•´ì•¼í•¨.
 	inline constexpr DWORD SOCKADDR_PADDING = 16;
-
+	inline constexpr size_t MAX_SEND_BUFFER_COUNT = 10;
 }

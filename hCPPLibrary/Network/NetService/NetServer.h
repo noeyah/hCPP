@@ -1,33 +1,27 @@
-#pragma once
+﻿#pragma once
 #include <memory>
 
 #include "NetService.h"
 #include "Network/NetConfig.h"
-#include "Network/Socket/SocketPool.h"
 
-namespace hlib::task
+namespace hlib
 {
 	class IJobQueue;
-}
-
-namespace hlib::net
-{
 	class Listener;
 
 	class NetServer : public NetService
 	{
+		NetServerConfig m_serverConfig;
+		std::shared_ptr<Listener> m_pListener;
+
 	public:
-		NetServer(NetServerConfig config, task::IJobQueue& jobQueue, SessionManager::SessionFactory factory);
+		NetServer(NetServerConfig config, IJobQueue& jobQueue);
 		~NetServer();
 
 	protected:
 		virtual bool InitSocket() final;
 		virtual void CloseSocket() final;
-
-	private:
-		NetServerConfig serverConfig_;
-		SocketPool socketPool_;
-		std::shared_ptr<Listener> listener_;
+		
 	};
 
 }

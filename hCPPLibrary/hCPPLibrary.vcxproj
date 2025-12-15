@@ -148,6 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Behavior\BehaviorTree.h" />
     <ClInclude Include="Command\CmdService.h" />
     <ClInclude Include="core.h" />
     <ClInclude Include="DB\DBQuery.h" />
@@ -168,10 +169,8 @@
     <ClInclude Include="Network\Connection\SessionManager.h" />
     <ClInclude Include="Network\NetConfig.h" />
     <ClInclude Include="Network\NetCommon.h" />
-    <ClInclude Include="Network\Buffer\AsyncSendQueue.h" />
-    <ClInclude Include="Network\Buffer\BufferReader.h" />
+    <ClInclude Include="Network\Buffer\SendBuffer.h" />
     <ClInclude Include="Network\Buffer\PacketBuffer.h" />
-    <ClInclude Include="Network\Socket\SocketPool.h" />
     <ClInclude Include="Lock\SharedSpinLock.h" />
     <ClInclude Include="Memory\ObjectPool.h" />
     <ClInclude Include="Task\IJobQueue.h" />
@@ -194,7 +193,7 @@
     <ClInclude Include="Memory\Allocator.h" />
     <ClInclude Include="Network\Core\IocpDispatcher.h" />
     <ClInclude Include="Network\Core\IoContext.h" />
-    <ClInclude Include="Network\Core\IIoCompletionHandler.h" />
+    <ClInclude Include="Network\Core\IoHandler.h" />
     <ClInclude Include="Network\Connection\Listener.h" />
     <ClInclude Include="Util\Macro.h" />
     <ClInclude Include="Network\NetService\INetService.h" />
@@ -218,9 +217,7 @@
     <ClCompile Include="Memory\Resource\LogResourceWrapper.cpp" />
     <ClCompile Include="Network\NetService\NetClient.cpp" />
     <ClCompile Include="Network\InternalNetwork.h" />
-    <ClCompile Include="Network\Buffer\AsyncSendQueue.cpp" />
-    <ClCompile Include="Network\Buffer\BufferReader.cpp" />
-    <ClCompile Include="Network\Socket\SocketPool.cpp" />
+    <ClCompile Include="Network\Buffer\SendBuffer.cpp" />
     <ClCompile Include="Network\Connection\SessionManager.cpp" />
     <ClCompile Include="Lock\SharedSpinLock.cpp" />
     <ClCompile Include="Task\Scheduler.cpp" />

@@ -37,7 +37,5 @@ namespace core
 {
 	using namespace hlib;
 	using namespace hlib::log;
-	using namespace hlib::task;
-	using namespace hlib::net;
 	using namespace hlib::cmd;
 }

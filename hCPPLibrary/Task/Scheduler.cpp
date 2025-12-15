@@ -1,7 +1,7 @@
 ﻿#include "Scheduler.h"
 #include "IJobQueue.h"
 
-namespace hlib::task
+namespace hlib
 {
 	Scheduler::Scheduler(IJobQueue& queue) 
 		: queue_(queue),
@@ -21,7 +21,7 @@ namespace hlib::task
 		thread_.Stop();
 	}
 
-	void Scheduler::Push(time_point time, IJob::SharedPtr job)
+	void Scheduler::Push(time_point time, std::shared_ptr<IJob> job)
 	{
 		bool needNotify = false;
 
@@ -40,7 +40,7 @@ namespace hlib::task
 
 	void Scheduler::Work(std::atomic_bool& running)
 	{
-		std::vector<IJob::SharedPtr> expiredJobs;
+		std::vector<std::shared_ptr<IJob>> expiredJobs;
 		Time::steady_time nextWakeup;
 
 		while (running.load())

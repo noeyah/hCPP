@@ -1,11 +1,12 @@
-#pragma once
+﻿#pragma once
 #include <memory>
 #include "Network/NetCommon.h"
 
-namespace hlib::net
+namespace hlib
 {
 	class Session;
 
+	// TODO 삭제예정
 	class INetService
 	{
 	public:

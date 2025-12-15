@@ -16,34 +16,17 @@ int main()
 	config.ip = "127.0.0.1";
 	config.port = 7777;
 	config.acceptCount = 30;
-	config.socketPoolInitCount = 100;
 	config.ioThreadCount = 2;
 
-	MainServer server(config);
-	server.Start();
+	MainServer::Instance()->Init(config);
+	MainServer::Instance()->Start();
 
 	core::CmdService cmdService;
 	cmdService.RegisterCommand("exit", "exit server",
-							   [&server, &cmdService](const core::CommandArgs& args) {
-								   server.Stop();
-								   cmdService.Exit();
+							   [&cmdService](const core::CommandArgs& args) {
+									MainServer::Instance()->Stop();
+									cmdService.Exit();
 							   });
-
-#ifdef _DEBUG
-
-	if (core::MEMORY_RESOURCE_MODE == core::MemoryMode::Log)
-	{
-		cmdService.RegisterCommand("memory", "if memory mode is log, show alloc info",
-								   [](const core::CommandArgs& args) {
-									   core::Memory::Instance()->Print();
-								   });
-	}
-
-	cmdService.RegisterCommand("session", "show session count",
-							   [](const core::CommandArgs& args) {
-								   core::Session::Print();
-							   });
-#endif // _DEBUG
 
 	cmdService.Run();
 }

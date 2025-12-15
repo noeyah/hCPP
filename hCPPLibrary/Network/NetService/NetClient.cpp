@@ -1,14 +1,13 @@
-#include "NetClient.h"
+﻿#include "NetClient.h"
 #include "Util/Macro.h"
 #include "Network/Socket/SocketUtil.h"
 #include "Network/Connection/Session.h"
 #include "Log.h"
 
-namespace hlib::net
+namespace hlib
 {
-	NetClient::NetClient(NetClientConfig config, task::IJobQueue& jobQueue, SessionManager::SessionFactory factory)
-		: NetService(config, jobQueue, std::move(factory)),
-		clientConfig_(config)
+	NetClient::NetClient(NetClientConfig config,IJobQueue& jobQueue)
+		: NetService(config, jobQueue), m_clientConfig(config)
 	{
 	}
 
@@ -19,12 +18,12 @@ namespace hlib::net
 
 	bool NetClient::InitSocket()
 	{
-		for (size_t i = 0; i < clientConfig_.connectCount; i++)
+		for (size_t i = 0; i < m_clientConfig.connectCount; i++)
 		{
 			Connect();
 		}
 
-		LOG_INFO("Connect {}", clientConfig_.connectCount);
+		LOG_INFO("Connect {}", m_clientConfig.connectCount);
 		return true;
 	}
 
@@ -37,10 +36,10 @@ namespace hlib::net
 		SOCKET socket = sock::Create();
 		ASSERT_CRASH(socket != INVALID_SOCKET);
 
-		auto session = sessionManager_.Create(socket, &address_);
+		auto session = m_sessionMgr.Create(socket, &m_address);
 		if (session)
 		{
-			session->Connect();
+			session->ConnectAsync();
 		}
 	}
 }

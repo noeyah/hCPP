@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -8,12 +8,12 @@
 #include "Job.h"
 #include "Memory/Allocator.h"
 
-namespace hlib::task
+namespace hlib
 {
 	template<typename F>
-	void PushJob(hlib::task::IJobQueue& queue, F&& func)
+	void PushJob(IJobQueue& queue, F&& func)
 	{
-		auto job = hlib::MakeSharedPtr<hlib::task::Job<F>>(std::forward<F>(func));
+		auto job = hlib::MakeSharedPtr<Job<F>>(std::forward<F>(func));
 		queue.Push(std::move(job));
 	}
 }

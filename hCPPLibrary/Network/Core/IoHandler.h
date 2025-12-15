@@ -1,13 +1,13 @@
-#pragma once
+﻿#pragma once
 
-namespace hlib::net
+namespace hlib
 {
 	struct IoContext;
 
-	class IIoCompletionHandler
+	class IoHandler
 	{
 	public:
-		virtual ~IIoCompletionHandler() = default;
+		virtual ~IoHandler() = default;
 
 		virtual void CompletedAsync(IoContext* context, DWORD bytesTransferred) = 0;
 		virtual void ErrorHandler(IoContext* context, int32_t wsaErrorCode) = 0;

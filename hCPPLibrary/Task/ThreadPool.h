@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 #include <thread>
 #include <cstdint>
 #include <atomic>
 #include "Thread/WorkerThread.h"
 
-namespace hlib::task
+namespace hlib
 {
 	class IJobQueue;
 

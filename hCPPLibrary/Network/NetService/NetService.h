@@ -1,40 +1,49 @@
-#pragma once
+﻿#pragma once
 #include <cstdint>
 #include <atomic>
 
 #include "WinCommon.h"
-#include "INetService.h"
 #include "Network/Core/IocpDispatcher.h"
 #include "Network/Connection/SessionManager.h"
 #include "Network/NetConfig.h"
+#include "Network/Connection/Session.h"
 
-namespace hlib::task
+namespace hlib
 {
 	class IJobQueue;
-}
 
-namespace hlib::net
-{
-	class NetService : public INetService
+	class NetService
 	{
+	protected:
+		SOCKADDR_IN m_address{};
+		NetConfig m_config;
+		std::atomic_bool m_bRunning{ false };
+		IocpDispatcher m_dispatcher;
+		SessionManager m_sessionMgr;
+
 	public:
-		NetService(NetConfig config, task::IJobQueue& jobQueue, SessionManager::SessionFactory factory);
+
+		NetService(NetConfig config, IJobQueue& jobQueue);
 		virtual ~NetService() = default;
 
-		virtual bool Start() final;
-		virtual void Stop() final;
+		template <typename T>
+		bool Start() requires std::derived_from<T, Session>
+		{
+			m_sessionMgr.SetSessionFactory([]()
+			{
+				return std::make_shared<T>();
+			});
+			return InternalStart();
+		}
+
+		void Stop();
 
 	protected:
+		bool InternalStart();
+
 		virtual bool InitSocket() = 0;
 		virtual void CloseSocket() = 0;
 
-	protected:
-		SOCKADDR_IN address_{};
-		NetConfig netConfig_;
-		std::atomic_bool isRunning_ = false;
-
-		IocpDispatcher iocpDispatcher_;
-		SessionManager sessionManager_;
 	};
 
 }

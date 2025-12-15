@@ -8,45 +8,45 @@
 #include "Log.h"
 #include "Network/InternalNetwork.h"
 #include "IoContext.h"
-#include "IIoCompletionHandler.h"
+#include "IoHandler.h"
 
-namespace hlib::net
+namespace hlib
 {
-	IocpDispatcher::IocpDispatcher(hlib::task::IJobQueue& jobQueue) 
-		: jobQueue_(jobQueue),
-		thread_([this](std::atomic_bool& running) {this->Work(); },
+	IocpDispatcher::IocpDispatcher(IJobQueue& jobQueue) 
+		: m_jobQueue(jobQueue),
+		m_thread([this](std::atomic_bool& running) {this->Work(); },
 				[this]() { this->RequestStop(); })
 	{
-		iocpHandle_ = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
-		ASSERT_CRASH(iocpHandle_ != INVALID_HANDLE_VALUE);
+		m_handle = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
+		ASSERT_CRASH(m_handle != INVALID_HANDLE_VALUE);
 	}
 
 	IocpDispatcher::~IocpDispatcher()
 	{
-		if (iocpHandle_ != INVALID_HANDLE_VALUE)
+		if (m_handle != INVALID_HANDLE_VALUE)
 		{
-			::CloseHandle(iocpHandle_);
+			::CloseHandle(m_handle);
 		}
 	}
 
 	void IocpDispatcher::Start(size_t threadCount)
 	{
-		thread_.Start(threadCount);
+		m_thread.Start(threadCount);
 		LOG_INFO("iocp dispatcher start");
 	}
 
 	void IocpDispatcher::Stop()
 	{
-		thread_.Stop();
+		m_thread.Stop();
 		LOG_INFO("iocp dispatcher stop");
 	}
 
 	void IocpDispatcher::RequestStop()
 	{
-		auto count = thread_.GetThreadCount();
+		auto count = m_thread.GetThreadCount();
 		for (size_t i = 0; i < count; i++)
 		{
-			PostQueuedCompletionStatus(iocpHandle_, 0, 0, NULL);
+			PostQueuedCompletionStatus(m_handle, 0, 0, NULL);
 		}
 	}
 
@@ -65,7 +65,7 @@ namespace hlib::net
 		ULONG_PTR completionKey{};
 		IoContext* ioContext{};
 
-		auto ret = ::GetQueuedCompletionStatus(iocpHandle_, 
+		auto ret = ::GetQueuedCompletionStatus(m_handle, 
 											   &bytesTransferred,
 											   &completionKey, 
 											   reinterpret_cast<LPOVERLAPPED*>(&ioContext), 
@@ -119,6 +119,6 @@ namespace hlib::net
 			}
 		};
 
-		hlib::task::PushJob(jobQueue_, std::move(jobLambda));
+		PushJob(m_jobQueue, std::move(jobLambda));
 	}
 }

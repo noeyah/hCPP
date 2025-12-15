@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <memory>
 #include <cstdint>
 #include <cstring>
@@ -8,14 +8,12 @@
 #include "Network/NetCommon.h"
 #include "Network/InternalNetwork.h"
 #include "Memory/Container.h"
-#include <string>
-#include <atomic>
 
-namespace hlib::net
+namespace hlib
 {
-	class IIoCompletionHandler;
+	class IoHandler;
 
-	// Ã¹ ¸â¹ö or »ó¼ÓÀ¸·Î, ¸Ş¸ğ¸® ½ÃÀÛ ºÎºĞ¿¡ OVERLAPPED°¡ ÀÖ¾î¾ß ÇÔ. °¡»ó ÇÔ¼ö ¾²¸é ¾ÈµÊ.
+	// ì²« ë©¤ë²„ or ìƒì†ìœ¼ë¡œ, ë©”ëª¨ë¦¬ ì‹œì‘ ë¶€ë¶„ì— OVERLAPPEDê°€ ìˆì–´ì•¼ í•¨. ê°€ìƒ í•¨ìˆ˜ ì“°ë©´ ì•ˆë¨.
 	struct IoContext : public OVERLAPPED
 	{
 		IoContext(IoOperation io_op) : ioOperation(io_op)
@@ -29,7 +27,7 @@ namespace hlib::net
 		}
 
 		IoOperation ioOperation;
-		std::shared_ptr<IIoCompletionHandler> ioHandler;
+		std::shared_ptr<IoHandler> ioHandler;
 	};
 
 	struct AcceptContext : public IoContext
@@ -47,21 +45,6 @@ namespace hlib::net
 
 		SOCKET clientSocket = INVALID_SOCKET;
 		std::array<char, (sizeof(SOCKADDR_IN) + SOCKADDR_PADDING) * 2> clientAddressBuffer{};
-	};
-
-	struct RecvContext : public IoContext
-	{
-		RecvContext() : IoContext(IoOperation::Recv)
-		{
-		}
-
-		void Reset()
-		{
-			IoContext::Reset();
-			recvBuffer.reset();
-		}
-
-		std::shared_ptr<std::byte[]> recvBuffer;
 	};
 
 	struct SendContext : public IoContext

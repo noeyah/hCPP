@@ -2,49 +2,35 @@
 #include <vector>
 #include "Util/Macro.h"
 #include "Network/Socket/SocketUtil.h"
+#include "Network/Connection/Session.h"
 
-namespace hlib::net
+namespace hlib
 {
-	SessionManager::SessionManager(HANDLE handle, SessionFactory factory)
-		: iocpHandle_(handle), sessionFactory_(std::move(factory))
-	{
-		ASSERT_CRASH(sessionFactory_);
-	}
-
 	SessionManager::~SessionManager()
 	{
-		sessions_.clear();
+		m_sessions.clear();
 	}
 
-	void SessionManager::SetReturnSockCallback(Session::ReturnSockCallback sockReturnCallback)
+	SessionPtr SessionManager::Create(SOCKET socket, const SOCKADDR_IN* sockAddr)
 	{
-		sockReturnCallback_ = sockReturnCallback;
-	}
+		if (!m_sessionFactory)
+			return nullptr;
 
-	Session::SharedPtr SessionManager::Create(SOCKET socket, const SOCKADDR_IN* sockAddr)
-	{
-		auto sessionId = GenerateSessionId();
-		auto removeCallback = [this](SessionId removeId) {
-			this->Remove(removeId);
-		};
-		
-		Session::SharedPtr session = sessionFactory_();
-		session->Initialize(socket, sessionId, *sockAddr, removeCallback);
+		auto id = GenerateID();
+		SessionPtr session = m_sessionFactory();
+		session->Initialize(socket, id, *sockAddr);
+		session->SetDisconnectCallback([this](uint64_t id) { this->Remove(id); });
 
-		if (sockReturnCallback_)
-		{
-			session->SetReturnSock(sockReturnCallback_);
-		}
-
-		if (!sock::RegisterIoCompletionPort(iocpHandle_, socket, sessionId))
+		if (!sock::RegisterIoCompletionPort(m_handle, socket, id))
 		{
 			CRASH("RegisterIoCompletionPort failed - {}", ::WSAGetLastError());
 		}
 
 		{
-			Lock lock(sspin_);
-			sessions_[sessionId] = session;
+			Lock lock(m_lock);
+			m_sessions[id] = session;
 		}
+
 		return session;
 	}
 
@@ -55,12 +41,12 @@ namespace hlib::net
 			session->StartIo();
 	}
 
-	Session::SharedPtr SessionManager::Get(SessionId sessionId)
+	SessionPtr SessionManager::Get(uint64_t sessionId)
 	{
-		SharedLock lock(sspin_);
+		SharedLock lock(m_lock);
 
-		auto it = sessions_.find(sessionId);
-		if (it == sessions_.end())
+		auto it = m_sessions.find(sessionId);
+		if (it == m_sessions.end())
 			return nullptr;
 
 		return it->second;
@@ -68,12 +54,12 @@ namespace hlib::net
 
 	void SessionManager::Close()
 	{
-		std::vector<Session::SharedPtr> sessions;
+		std::vector<SessionPtr> sessions;
 
 		{
-			SharedLock lock(sspin_);
-			sessions.reserve(sessions_.size());
-			for (auto& [id, session] : sessions_)
+			SharedLock lock(m_lock);
+			sessions.reserve(m_sessions.size());
+			for (auto& [id, session] : m_sessions)
 			{
 				if (session)
 					sessions.emplace_back(session);
@@ -83,19 +69,19 @@ namespace hlib::net
 		for (auto& session : sessions)
 		{
 			if (session)
-				session->Disconnect();
+				session->Close();
 		}
 	}
 
 	void SessionManager::Remove(uint64_t sessionId)
 	{
-		Lock lock(sspin_);
+		Lock lock(m_lock);
 
-		auto it = sessions_.find(sessionId);
-		if (it == sessions_.end())
+		auto it = m_sessions.find(sessionId);
+		if (it == m_sessions.end())
 			return;
 
-		sessions_.erase(it);
+		m_sessions.erase(it);
 	}
 
 }

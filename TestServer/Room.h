@@ -10,6 +10,9 @@ class ClientSession;
 
 class Room
 {
+	mutable std::recursive_mutex m_lock;
+	std::unordered_map<uint64_t, User> m_users;
+
 public:
 	void JoinUser(uint64_t sessionId, const std::string& name, std::weak_ptr<ClientSession> session);
 	void LeaveUser(uint64_t sessionId);
@@ -20,10 +23,5 @@ public:
 
 private:
 	core::Vector<std::shared_ptr<ClientSession>> GetSessionPtrs(uint64_t excludeId) const;
-
-private:
-	mutable std::recursive_mutex mtx_;
-	std::unordered_map<uint64_t, User> users_;
-
 };
 

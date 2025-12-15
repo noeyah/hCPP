@@ -12,7 +12,7 @@
 #include "Thread/WorkerThread.h"
 #include "Util/TimeUtil.h"
 
-namespace hlib::task
+namespace hlib
 {
 	class IJobQueue;
 	class IJob;
@@ -52,7 +52,7 @@ namespace hlib::task
 		}
 
 	private:
-		void Push(time_point time, IJob::SharedPtr job);
+		void Push(time_point time, std::shared_ptr<IJob> job);
 
 		void Work(std::atomic_bool& running);
 
@@ -62,6 +62,6 @@ namespace hlib::task
 		std::condition_variable cv_;
 
 		std::mutex mtx_;
-		std::multimap<time_point, IJob::SharedPtr> scheduleMap_{};
+		std::multimap<time_point, std::shared_ptr<IJob>> scheduleMap_{};
 	};
 }

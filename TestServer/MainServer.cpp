@@ -2,20 +2,17 @@
 #include <memory>
 #include "Client/ClientSession.h"
 
-MainServer::MainServer(core::NetServerConfig config)
-	: threadPool_(jobQueue_, 1),
-	scheduler_(jobQueue_),
-	netService_(config, 
-				jobQueue_,
-				[this]() -> std::shared_ptr<ClientSession> { return core::MakeSharedPtr<ClientSession>(this->packetDispatcher_); }),
-	packetHandler_(room_),
-	packetDispatcher_(packetHandler_)
+void MainServer::Init(core::NetServerConfig config)
 {
+	m_pThreadPool = std::make_shared<core::ThreadPool>(m_jobQueue, 1);
+	m_pScheduler = std::make_shared<core::Scheduler>(m_jobQueue);
+	m_pServer = std::make_shared<core::NetServer>(config, m_jobQueue);
+	m_pRoom = std::make_shared<Room>();
 }
 
 void MainServer::Start()
 {
-	if (!netService_.Start())
+	if (!m_pServer->Start<ClientSession>())
 	{
 		LOG_ERROR("server start failed");
 		return;
@@ -25,7 +22,7 @@ void MainServer::Start()
 
 void MainServer::Stop()
 {
-	netService_.Stop();
-	scheduler_.Stop();
-	threadPool_.Stop();
+	m_pServer->Stop();
+	m_pScheduler->Stop();
+	m_pThreadPool->Stop();
 }

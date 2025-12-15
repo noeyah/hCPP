@@ -1,4 +1,4 @@
-#include "Session.h"
+Ôªø#include "Session.h"
 #include "Memory/Memory.h"
 #include "Memory/Buffer.h"
 #include "Network/Socket/SocketUtil.h"
@@ -6,109 +6,50 @@
 #include "Network/Buffer/PacketBuffer.h"
 #include "Log.h"
 
-namespace hlib::net
+namespace hlib
 {
-	Session::Session()
-	{
-#ifdef _DEBUG
-		constructionCnt_++;
-#endif // _DEBUG
-	}
+
 	Session::~Session()
 	{
-#ifdef _DEBUG
-		destructionCnt_++;
-#endif // _DEBUG
-
-		bufferReader_.Clear();
-		sendQueue_.Clear();
-
-		if (returnSockCallback_)
-		{
-			returnSockCallback_(socket_);
-		}
-		else
-		{
-			sock::Close(socket_);
-		}
+		m_sendBuffer.Clear();
+		sock::Close(m_socket);
 	}
 
-#ifdef _DEBUG
-	void Session::Print()
+	void Session::Initialize(SOCKET socket, uint64_t sessionId, const SOCKADDR_IN& sock_addr)
 	{
-		LOG_DEBUG("Session counting {} : {}", constructionCnt_.load(), destructionCnt_.load());
-	}
-#endif // _DEBUG
-
-	void Session::Initialize(SOCKET socket,
-							 SessionId sessionId,
-							 const SOCKADDR_IN& sock_addr, 
-							 DisconnectCallback disconnectCallback)
-	{
-		socket_ = socket;
-		sessionId_ = sessionId;
-		sockAddress_ = sock_addr;
-		state_.store(State::State_Idle);
-
-		disconnectCallback_ = std::move(disconnectCallback);
-	}
-
-	void Session::SetReturnSock(ReturnSockCallback returnSockCallback)
-	{
-		returnSockCallback_ = returnSockCallback;
+		m_socket = socket;
+		m_id = sessionId;
+		m_address = sock_addr;
 	}
 
 	void Session::StartIo()
 	{
-		state_.store(State::State_Connected);
+		if (!TryOpen())
+			return;
 
 		OnConnected();
-
 		RecvAsync();
 	}
 
-	void Session::Connect()
-	{
-		ConnectAsync();
-	}
-
-	void Session::Disconnect()
-	{
-		DisconnectAsync();
-	}
-
-	bool Session::Send(std::shared_ptr<PacketBuffer> buffer)
+	bool Session::Send(std::shared_ptr<PacketBuffer> pBuffer)
 	{
 		bool startSending = false;
 
-		if (buffer->Size() > MAX_BUFFER_SIZE)
-		{
+		if (pBuffer->DataSize() > MAX_BUFFER_SIZE)
 			return false;
-		}
 
-		bool startSend = false;
-		{
-			std::lock_guard lock(sendMtx_);
-			sendQueue_.Push(buffer);
+		m_sendBuffer.Push(pBuffer);
 
-			if (!isSending_.exchange(true))
-				startSend = true;
-		}
-
-		if (startSend)
-		{
+		if (m_sendBuffer.Begin())
 			SendAsync();
-		}
-		
+
 		return true;
 	}
 
 	void Session::CompletedAsync(IoContext* context, DWORD bytesTransferd)
 	{
 		if (!context)
-		{
 			return;
-		}
 
 		switch (context->ioOperation)
 		{
@@ -124,10 +65,6 @@ namespace hlib::net
 			SendCompleted(bytesTransferd);
 			break;
 
-		case IoOperation::Disconnect:
-			DisconnectCompleted();
-			break;
-
 		default:
 			LOG_WARN("unknown ioOperation");
 			break;
@@ -139,19 +76,15 @@ namespace hlib::net
 		switch (context->ioOperation)
 		{
 		case IoOperation::Recv:
-			recvContext_.Reset();
+			m_recvContext.Reset();
 			break;
 
 		case IoOperation::Send:
-			sendContext_.Reset();
+			m_sendContext.Reset();
 			break;
 
 		case IoOperation::Connect:
-			connectContext_.Reset();
-			break;
-
-		case IoOperation::Disconnect:
-			disconnectContext_.Reset();
+			m_connectContext.Reset();
 			break;
 		}
 
@@ -161,48 +94,54 @@ namespace hlib::net
 		case WSAECONNRESET:
 		case WSAECONNABORTED:
 		{
-			LOG_DEBUG("session({}) disconnected. state : {}", GetSessionId(), state_.load());
-			Disconnect();
+			LOG_DEBUG("session({}) disconnected.", GetID());
+			Close();
 		} break;
 		default:
-			LOG_ERROR("session({}) io error : {}", GetSessionId(), wsaErrorCode);
+			LOG_ERROR("session({}) io error : {}", GetID(), wsaErrorCode);
 			break;
 		}
 	}
 
+	void Session::Close()
+	{
+		m_bConnected.store(false);
+
+		if (m_disconnectCallback)
+			m_disconnectCallback(m_id);
+	}
+
 	void Session::ConnectAsync()
 	{
-		if (state_.exchange(State::State_Connecting) != State::State_Idle)
+		if (IsConnected())
 			return;
 
 		if (!SetConnectSockopt())
 		{
-			sock::Close(socket_);
-			
+			Close();
 			return;
 		}
 
-		connectContext_.Reset();
-		connectContext_.ioHandler = shared_from_this();
+		m_connectContext.Reset();
+		m_connectContext.ioHandler = shared_from_this();
 
 		DWORD bytes_sent = 0;
 
-		auto ret = ConnectEx(socket_,
-							 reinterpret_cast<const SOCKADDR*>(&sockAddress_),
-							 sizeof(sockAddress_),
+		auto ret = ConnectEx(m_socket,
+							 reinterpret_cast<const SOCKADDR*>(&m_address),
+							 sizeof(m_address),
 							 nullptr,
 							 0,
 							 &bytes_sent,
-							 static_cast<LPOVERLAPPED>(&connectContext_));
+							 static_cast<LPOVERLAPPED>(&m_connectContext));
 
 		if (!ret)
 		{
 			const int errorCode = WSAGetLastError();
 			if (errorCode != WSA_IO_PENDING)
 			{
-				LOG_ERROR("session({}) connect error : {}", GetSessionId(), errorCode);
-				sock::Close(socket_);
-				RemoveSession();
+				LOG_ERROR("session({}) connect error : {}", GetID(), errorCode);
+				Close();
 				return;
 			}
 		}
@@ -210,9 +149,9 @@ namespace hlib::net
 
 	void Session::ConnectCompleted()
 	{
-		connectContext_.Reset();
+		m_connectContext.Reset();
 
-		if (!sock::SetUpdateConnectContext(socket_))
+		if (!sock::SetUpdateConnectContext(m_socket))
 		{
 			CRASH("SetUpdateConnectContext failed - {}", ::WSAGetLastError());
 		}
@@ -220,69 +159,36 @@ namespace hlib::net
 		StartIo();
 	}
 
-	void Session::DisconnectAsync()
-	{
-		if (state_.exchange(State::State_Disconnect) == State::State_Disconnect)
-		{
-			return;
-		}
-
-		disconnectContext_.Reset();
-		disconnectContext_.ioHandler = shared_from_this();
-
-		auto ret = DisconnectEx(socket_,
-								&disconnectContext_,
-								TF_REUSE_SOCKET,
-								0);
-
-		if (!ret)
-		{
-			const int errorCode = WSAGetLastError();
-			if (errorCode != WSA_IO_PENDING)
-			{
-				LOG_ERROR("session({}) disconnect error : {}", GetSessionId(), errorCode);
-				disconnectContext_.Reset();
-				sock::Close(socket_);
-				RemoveSession();
-				return;
-			}
-		}
-	}
-
-	void Session::DisconnectCompleted()
-	{
-		disconnectContext_.Reset();
-
-		OnDisconnected();
-
-		RemoveSession();
-	}
-
 	void Session::RecvAsync()
 	{
-		recvContext_.Reset();
-
 		if (!IsConnected())
+			return;
+
+		m_recvContext.Reset();
+		m_recvContext.ioHandler = shared_from_this();
+		
+		m_recvBuffer.Clean();
+
+		if (m_recvBuffer.FreeSize() == 0)
 		{
+			LOG_WARN("session({}) recv buffer overflow : {}", GetID());
+			Close();
 			return;
 		}
 
-		recvContext_.ioHandler = shared_from_this();
-		recvContext_.recvBuffer = Buffer::Get(MAX_BUFFER_SIZE);
-		
 		WSABUF wsaBuf;
-		wsaBuf.buf = reinterpret_cast<char*>(recvContext_.recvBuffer.get());
-		wsaBuf.len = static_cast<ULONG>(MAX_BUFFER_SIZE);
+		wsaBuf.buf = reinterpret_cast<char*>(m_recvBuffer.WritePos());
+		wsaBuf.len = static_cast<ULONG>(m_recvBuffer.FreeSize());
 
 		DWORD numOfBytes = 0;
 		DWORD flag = 0;
 
-		auto ret = WSARecv(socket_,
+		auto ret = WSARecv(m_socket,
 						   &wsaBuf,
 						   1,
 						   &numOfBytes,
 						   &flag,
-						   &recvContext_,
+						   &m_recvContext,
 						   nullptr);
 
 		if (ret == SOCKET_ERROR)
@@ -290,9 +196,9 @@ namespace hlib::net
 			auto errorCode = WSAGetLastError();
 			if (errorCode != WSA_IO_PENDING)
 			{
-				LOG_ERROR("session({}) recv error : {}", GetSessionId(), errorCode);
-				recvContext_.Reset();
-				Disconnect();
+				LOG_ERROR("session({}) recv error : {}", GetID(), errorCode);
+				m_recvContext.Reset();
+				Close();
 				return;
 			}
 		}
@@ -300,34 +206,22 @@ namespace hlib::net
 
 	void Session::RecvCompleted(DWORD bytesTransferred)
 	{
-		if (bytesTransferred == 0)
+		if (bytesTransferred == 0 || !IsConnected())
 		{
-			LOG_INFO("session({}) recv 0", GetSessionId());
-			recvContext_.Reset();
-			Disconnect();
-			return;
-		}
-
-		if (!IsConnected())
-		{
-			recvContext_.Reset();
+			LOG_INFO("session({}) disconnected or recv 0", GetID());
+			m_recvContext.Reset();
+			Close();
 			return;
 		}
 		
-		auto buffer = recvContext_.recvBuffer.get();
-
-		if (!bufferReader_.Write(reinterpret_cast<const void*>(buffer), bytesTransferred))
+		if (!m_recvBuffer.OnWrite(bytesTransferred))
 		{
-			// πˆ∆€ ∫Œ¡∑
-			LOG_WARN("session({}) buffer reader write failed. recv bytes : {}", GetSessionId(), bytesTransferred);
-			recvContext_.Reset();
+			LOG_ERROR("session({}) buffer write overflow error", GetID());
+			Close();
 			return;
 		}
 
 		ReadBuffer();
-		bufferReader_.Cleanup();
-
-		recvContext_.Reset();
 		RecvAsync();
 	}
 
@@ -335,32 +229,29 @@ namespace hlib::net
 	{
 		if (!IsConnected())
 		{
-			SendEnd();
+			m_sendBuffer.End();
 			return;
 		}
 
+		if (m_sendBuffer.IsEmpty())
 		{
-			std::lock_guard lock(sendMtx_);
-			if (sendQueue_.IsEmpty())
-			{
-				SendEnd();
-				return;
-			}
+			m_sendBuffer.End();
+			return;
 		}
 
-		sendContext_.Reset();
-		sendContext_.ioHandler = shared_from_this();
+		m_sendContext.Reset();
+		m_sendContext.ioHandler = shared_from_this();
 
 		size_t sendBytes;
-		sendQueue_.PrepareSend(sendContext_.wsaBufs, MAX_SEND_BUFFER_COUNT, sendContext_.sendSize, sendBytes);
+		m_sendBuffer.PrepareSend(m_sendContext.wsaBufs, MAX_SEND_BUFFER_COUNT, m_sendContext.sendSize, sendBytes);
 
 		DWORD numOfBytes = 0;
-		auto ret = WSASend(socket_,
-						   sendContext_.wsaBufs.data(),
-						   static_cast<DWORD>(sendContext_.wsaBufs.size()),
+		auto ret = WSASend(m_socket,
+						   m_sendContext.wsaBufs.data(),
+						   static_cast<DWORD>(m_sendContext.wsaBufs.size()),
 						   &numOfBytes,
 						   0,
-						   &sendContext_,
+						   &m_sendContext,
 						   nullptr);
 
 		if (ret == SOCKET_ERROR)
@@ -368,10 +259,10 @@ namespace hlib::net
 			auto errorCode = WSAGetLastError();
 			if (errorCode != WSA_IO_PENDING)
 			{
-				LOG_ERROR("session({}) send error : {}", GetSessionId(), errorCode);
-				sendContext_.Reset();
-				SendEnd();
-				Disconnect();
+				LOG_ERROR("session({}) send error : {}", GetID(), errorCode);
+				m_sendContext.Reset();
+				m_sendBuffer.End();
+				Close();
 				return;
 			}
 		}
@@ -381,35 +272,35 @@ namespace hlib::net
 	{
 		if (bytesTransferred == 0)
 		{
-			LOG_WARN("session({}) completed send bytes 0", GetSessionId());
-			sendContext_.Reset();
-			SendEnd();
-			Disconnect();
+			LOG_WARN("session({}) completed send bytes 0", GetID());
+			m_sendContext.Reset();
+			m_sendBuffer.End();
+			Close();
 			return;
 		}
 
 		if (!IsConnected())
 		{
-			sendContext_.Reset();
-			SendEnd();
+			m_sendContext.Reset();
+			m_sendBuffer.End();
 			return;
 		}
 
-		sendQueue_.CompleteSend(sendContext_.sendSize);
-		sendContext_.Reset();
+		m_sendBuffer.CompleteSend(m_sendContext.sendSize);
+		m_sendContext.Reset();
 
 		SendAsync();
 	}
 
 	bool Session::SetConnectSockopt()
 	{
-		if (!sock::SetReuseAddress(socket_, true))
+		if (!sock::SetReuseAddress(m_socket, true))
 		{
 			CRASH("connect socket reuse failed");
 			return false;
 		}
 
-		if (!sock::BindAnyAddress(socket_, 0))
+		if (!sock::BindAnyAddress(m_socket, 0))
 		{
 			CRASH("connect socket bind failed");
 			return false;
@@ -422,44 +313,36 @@ namespace hlib::net
 	{
 		while (true)
 		{
-			auto bufferSize = bufferReader_.GetDataSize();
-			if (bufferSize < HEADER_SIZE)
+			if (m_recvBuffer.DataSize() < HEADER_SIZE)
 				break;
 
-			auto buffer = bufferReader_.GetReadBuffer();
-			PacketHeader header;
-			memcpy(&header, buffer, HEADER_SIZE);
+			PacketHeader* header = reinterpret_cast<PacketHeader*>(m_recvBuffer.ReadPos());
 
-			ASSERT_CRASH(header.size <= MAX_BUFFER_SIZE);
-			if (bufferSize < header.size)
+			if (header->size > m_recvBuffer.Capacity())
+			{
+				LOG_ERROR("session({}) packet too large: {}", GetID(), header->size);
+				Close();
+				return;
+			}
+
+			// Ìå®ÌÇ∑Ïù¥ Îã§ ÎèÑÏ∞©ÌïòÎ©¥ Ï°∞Î¶ΩÌï¥ÏïºÌï®
+			if (m_recvBuffer.DataSize() < header->size)
 				break;
 
-			std::span<const std::byte> packet(buffer + HEADER_SIZE, header.size - HEADER_SIZE);
+			std::byte* payloadPtr = m_recvBuffer.ReadPos() + HEADER_SIZE;
+			size_t payloadSize = header->size - HEADER_SIZE;
 
-			OnReceive(header.id, packet);
-			bufferReader_.CommitRead(header.size);
+			std::span<std::byte> payload(payloadPtr, payloadSize);
+
+			OnReceive(header->id, payload);
+
+			if (m_recvBuffer.OnRead(header->size) == false)
+			{
+				LOG_ERROR("session({}) error in OnRead", GetID());
+				Close();
+				return;
+			}
 		}
 	}
-
-	void Session::SendEnd()
-	{
-		isSending_.store(false);
-	}
-
-	void Session::RemoveSession()
-	{
-		if (disconnectCallback_)
-			disconnectCallback_(sessionId_);
-	}
-
-	/*void Session::LogHex(const char* title, const void* data, size_t size)
-	{
-		std::cout << title << " (" << size << " bytes): ";
-		const unsigned char* p = static_cast<const unsigned char*>(data);
-		for (size_t i = 0; i < size && i < 32; ++i) {
-			std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)p[i] << " ";
-		}
-		std::cout << std::dec << std::endl;
-	}*/
 
 }

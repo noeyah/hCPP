@@ -1,7 +1,4 @@
-﻿// 이 파일은 스크립트로 생성됨
-// 위치 : Solution/Packet/jinja2/cpp
-
-#pragma once
+﻿#pragma once
 #include <memory>
 
 #include <Chat.pb.h>
@@ -10,19 +7,16 @@
 
 class ClientSession;
 class Room;
+using SessionPtr = std::shared_ptr<ClientSession>;
 
 class PacketHandler
 {
 public:
-	PacketHandler(Room& room);
-	void OnDisconnected(std::shared_ptr<ClientSession>& session);
+	PacketHandler() = delete;
 
-	// 자동 생성
-	void OnReceivePacket(std::shared_ptr<ClientSession>& session, const packet::ChatReq& req);
-	void OnReceivePacket(std::shared_ptr<ClientSession>& session, const packet::JoinRoomReq& req);
-	void OnReceivePacket(std::shared_ptr<ClientSession>& session, const packet::LeaveRoomReq& req);
-	// 여기까지 자동 생성
+	static void OnDisconnected(SessionPtr pSession);
 
-private:
-	Room& room_;
+	static void OnReceivePacket(SessionPtr pSession, const packet::ChatReq& req);
+	static void OnReceivePacket(SessionPtr pSession, const packet::JoinRoomReq& req);
+	static void OnReceivePacket(SessionPtr pSession, const packet::LeaveRoomReq& req);
 };
