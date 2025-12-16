@@ -17,7 +17,7 @@ public:
 	void JoinUser(uint64_t sessionId, const std::string& name, std::weak_ptr<ClientSession> session);
 	void LeaveUser(uint64_t sessionId);
 	void ForEachUser(const std::function<void(const User&)>& fn) const;
-	void Broadcast(std::shared_ptr<core::PacketBuffer> buffer, uint64_t excludeId = 0);
+	void Broadcast(std::shared_ptr<hlib::PacketBuffer> buffer, uint64_t excludeId = 0);
 
 	bool IsMember(uint64_t sessionId);
 

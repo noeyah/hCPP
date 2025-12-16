@@ -17,7 +17,7 @@ public:
 	{
 	}
 
-	void Send(const std::shared_ptr<core::PacketBuffer>& buffer) const
+	void Send(const std::shared_ptr<hlib::PacketBuffer>& buffer) const
 	{
 		if (auto session = m_wpSession.lock())
 		{

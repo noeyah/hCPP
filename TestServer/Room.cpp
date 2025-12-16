@@ -21,7 +21,7 @@ void Room::ForEachUser(const std::function<void(const User&)>& fn) const
 	}
 }
 
-void Room::Broadcast(std::shared_ptr<core::PacketBuffer> buffer, uint64_t excludeId)
+void Room::Broadcast(std::shared_ptr<hlib::PacketBuffer> buffer, uint64_t excludeId)
 {
 	std::vector<std::shared_ptr<User>> users{};
 	{

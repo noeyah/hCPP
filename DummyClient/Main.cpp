@@ -7,11 +7,11 @@ int main()
 	SetConsoleOutputCP(CP_UTF8);
 	SetConsoleCP(CP_UTF8);
 
-	core::Memory::Instance();
+	hlib::Memory::Instance();
 	PacketRegister::Initialize();
 
 
-	core::NetClientConfig config;
+	hlib::NetClientConfig config;
 	config.name = "dummy client";
 	config.ip = "127.0.0.1";
 	config.port = 7777;
@@ -20,9 +20,9 @@ int main()
 	Server::Instance()->Init(config);
 	Server::Instance()->Start();
 
-	core::CmdService cmdService;
+	hlib::CmdService cmdService;
 	cmdService.RegisterCommand("exit", "exit server",
-							   [&cmdService](const core::CommandArgs& args) {
+							   [&cmdService](const hlib::CommandArgs& args) {
 									Server::Instance()->Stop();
 									cmdService.Exit();
 								});

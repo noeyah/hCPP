@@ -10,7 +10,7 @@
 #include "Memory/Container.h"
 #include "Util/Singleton.h"
 
-namespace hlib::cmd
+namespace hlib
 {
 	using CommandArgs = Vector<std::string>;
 	using CommandAction = std::function<void(const CommandArgs&)>;

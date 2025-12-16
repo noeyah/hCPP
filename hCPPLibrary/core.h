@@ -32,10 +32,3 @@
 
 #include "Command/CmdService.h"
 #include "Util/TimeUtil.h"
-
-namespace core
-{
-	using namespace hlib;
-	using namespace hlib::log;
-	using namespace hlib::cmd;
-}

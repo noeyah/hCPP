@@ -29,18 +29,18 @@ public:
 
 	template <typename TPacket>
 		requires std::is_base_of_v<google::protobuf::Message, TPacket>
-	static std::shared_ptr<core::PacketBuffer> Serialize(const TPacket& sendPacket)
+	static std::shared_ptr<hlib::PacketBuffer> Serialize(const TPacket& sendPacket)
 	{
 		const size_t packetSize = sendPacket.ByteSizeLong();
-		const size_t totalSize = core::HEADER_SIZE + packetSize;
+		const size_t totalSize = hlib::HEADER_SIZE + packetSize;
 
-		auto sendBuffer = core::MakeSharedPtr<core::PacketBuffer>(totalSize);
+		auto sendBuffer = hlib::MakeSharedPtr<hlib::PacketBuffer>(totalSize);
 
 		// 헤더
-		core::PacketHeader* header = reinterpret_cast<core::PacketHeader*>(sendBuffer->WritePos());
+		hlib::PacketHeader* header = reinterpret_cast<hlib::PacketHeader*>(sendBuffer->WritePos());
 		header->size = static_cast<uint16_t>(totalSize);
 		header->id = GetID<TPacket>();
-		sendBuffer->OnWrite(core::HEADER_SIZE);
+		sendBuffer->OnWrite(hlib::HEADER_SIZE);
 
 		// 바디
 		bool success = sendPacket.SerializeToArray(sendBuffer->WritePos(), static_cast<int>(packetSize));

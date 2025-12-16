@@ -6,7 +6,7 @@
 #include <sstream>
 #include "Log.h"
 
-namespace hlib::cmd
+namespace hlib
 {
 	CmdService::CmdService()
 		: thread_([this](std::atomic_bool& running) {this->Work(running); }, nullptr)

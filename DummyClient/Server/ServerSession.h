@@ -7,7 +7,7 @@
 #include <mutex>
 #include "core.h"
 
-class ServerSession : public core::Session
+class ServerSession : public hlib::Session
 {
 protected:
 	virtual void OnConnected() override;
