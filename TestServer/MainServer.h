@@ -19,6 +19,6 @@ public:
 	void Start();
 	void Stop();
 
-	Room* GetRoom() { return m_pRoom.get(); }
+	std::shared_ptr<Room> GetRoom() { return m_pRoom; }
 };
 

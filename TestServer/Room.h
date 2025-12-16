@@ -11,7 +11,7 @@ class ClientSession;
 class Room
 {
 	mutable std::recursive_mutex m_lock;
-	std::unordered_map<uint64_t, User> m_users;
+	std::unordered_map<uint64_t, std::shared_ptr<User>> m_users;
 
 public:
 	void JoinUser(uint64_t sessionId, const std::string& name, std::weak_ptr<ClientSession> session);
@@ -21,7 +21,5 @@ public:
 
 	bool IsMember(uint64_t sessionId);
 
-private:
-	core::Vector<std::shared_ptr<ClientSession>> GetSessionPtrs(uint64_t excludeId) const;
 };
 

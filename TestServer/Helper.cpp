@@ -4,7 +4,7 @@
 
 namespace Helper
 {
-	Room* GetRoom()
+	std::shared_ptr<Room> GetRoom()
 	{
 		return MainServer::Instance()->GetRoom();
 	}

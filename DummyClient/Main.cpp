@@ -17,13 +17,13 @@ int main()
 	config.port = 7777;
 	config.connectCount = 100;
 
-	Server server(config);
-	server.Start();
+	Server::Instance()->Init(config);
+	Server::Instance()->Start();
 
 	core::CmdService cmdService;
 	cmdService.RegisterCommand("exit", "exit server",
-							   [&server, &cmdService](const core::CommandArgs& args) {
-									server.Stop();
+							   [&cmdService](const core::CommandArgs& args) {
+									Server::Instance()->Stop();
 									cmdService.Exit();
 								});
 	cmdService.Run();

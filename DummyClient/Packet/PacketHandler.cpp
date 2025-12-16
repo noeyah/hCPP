@@ -9,14 +9,13 @@
 #include "Server/ServerSession.h"
 #include "PacketRegister.h"
 #include "PacketEnums.h"
+#include "Helper.h"
 
 using namespace packet;
+using namespace Helper;
 
-PacketHandler::PacketHandler(hlib::task::Scheduler& scheduler) : scheduler_(scheduler)
-{
-}
 
-void PacketHandler::OnConnected(std::shared_ptr<ServerSession>& session)
+void PacketHandler::OnConnected(SessionPtr pSession)
 {
 	const std::vector<hlib::Random::WeightItem<std::wstring>> nameItems = {
 		{ L"김더미", 21 }, { L"이더미", 14 }, { L"박더미", 8 }, { L"최더미", 4 }, { L"정더미", 4 },
@@ -24,27 +23,25 @@ void PacketHandler::OnConnected(std::shared_ptr<ServerSession>& session)
 	};
 
 	std::wstring name = hlib::Random::GetRandomWeight(nameItems);
-
-	scheduler_.PushAfter(1000, [session, name]() {
+	PushSchedule(1000, [pSession, name]() {
 		JoinRoomReq req;
 		req.set_name(hlib::ConvertToUtf8(name));
-		session->Send(PacketRegister::Serialize(req));
-		session->SetSendTime();
+		pSession->Send(PacketRegister::Serialize(req));
 	});
 }
 
-void PacketHandler::OnDisconnected(std::shared_ptr<ServerSession>& session)
+void PacketHandler::OnDisconnected(SessionPtr pSession)
 {
 }
 
-void PacketHandler::OnReceivePacket(std::shared_ptr<ServerSession>& session, const packet::ChatRes& res)
+void PacketHandler::OnReceivePacket(SessionPtr pSession, const packet::ChatRes& res)
 {
 	if (res.errorcode() != ErrorCode::OK)
 	{
-		LOG_ERROR("dummy({}) : ChatRes errorCode {}", session->GetID(), res.errorcode());
+		LOG_ERROR("dummy({}) : ChatRes errorCode {}", pSession->GetID(), res.errorcode());
 		return;
 	}
-	
+
 	const std::vector<hlib::Random::WeightItem<std::wstring>> chatItems = {
 		{ L"테스트 엔터\n\n엔터 두번했어요\n중간에 빈 한줄이 보이나요?", 20 },
 		{ L"날\n씨\n짱\n좋\n앙", 10 },
@@ -55,59 +52,50 @@ void PacketHandler::OnReceivePacket(std::shared_ptr<ServerSession>& session, con
 	};
 
 	std::wstring desc = hlib::Random::GetRandomWeight(chatItems);
-	scheduler_.PushAfter(hlib::Random::RandomRange(500, 2000), [session, desc]() {
+	PushSchedule(hlib::Random::RandomRange(500, 2000), [pSession, desc]() {
 		ChatReq req;
 		req.set_desc(hlib::ConvertToUtf8(desc));
-		session->Send(PacketRegister::Serialize(req));
-		session->SetSendTime();
-	});
-
-	scheduler_.PushAfter(5000, [session]() {
-		if (session->IsSendTimeout())
-		{
-			LOG_ERROR("TIMEOUT ChatReq : {}", session->GetID());
-			session->TimeOff();
-		}
+		pSession->Send(PacketRegister::Serialize(req));
 	});
 }
 
-void PacketHandler::OnReceivePacket(std::shared_ptr<ServerSession>& session, const packet::JoinRoomRes& res)
+void PacketHandler::OnReceivePacket(SessionPtr pSession, const packet::JoinRoomRes& res)
 {
 	if (res.errorcode() != ErrorCode::OK)
 	{
-		LOG_ERROR("dummy({}) : JoinRoomRes errorCode {}", session->GetID(), res.errorcode());
+		LOG_ERROR("dummy({}) : JoinRoomRes errorCode {}", pSession->GetID(), res.errorcode());
 		return;
 	}
 
 	ChatReq req;
 	req.set_desc(hlib::ConvertToUtf8(L"더 미 등 장"));
-	session->Send(PacketRegister::Serialize(req));
-	session->SetSendTime();
+	pSession->Send(PacketRegister::Serialize(req));
 }
 
-void PacketHandler::OnReceivePacket(std::shared_ptr<ServerSession>& session, const packet::LeaveRoomRes& res)
+void PacketHandler::OnReceivePacket(SessionPtr pSession, const packet::LeaveRoomRes& res)
 {
 	if (res.errorcode() != ErrorCode::OK)
 	{
-		LOG_ERROR("dummy({}) : LeaveRoomRes errorCode {}", session->GetID(), res.errorcode());
+		LOG_ERROR("dummy({}) : LeaveRoomRes errorCode {}", pSession->GetID(), res.errorcode());
 		return;
 	}
 
-	scheduler_.PushAfter(5000, [session]() {
+	PushSchedule(5000, [pSession]() {
 		JoinRoomReq req;
 		req.set_name(hlib::ConvertToUtf8(L"돌아온 더미쟝"));
-		session->Send(PacketRegister::Serialize(req));
+		pSession->Send(PacketRegister::Serialize(req));
 	});
 }
 
-void PacketHandler::OnReceivePacket(std::shared_ptr<ServerSession>& session, const packet::ChatNot& noti)
+void PacketHandler::OnReceivePacket(SessionPtr pSession, const packet::ChatNot& noti)
 {
 }
 
-void PacketHandler::OnReceivePacket(std::shared_ptr<ServerSession>& session, const packet::JoinRoomNot& noti)
+void PacketHandler::OnReceivePacket(SessionPtr pSession, const packet::JoinRoomNot& noti)
 {
 }
 
-void PacketHandler::OnReceivePacket(std::shared_ptr<ServerSession>& session, const packet::LeaveRoomNot& noti)
+void PacketHandler::OnReceivePacket(SessionPtr pSession, const packet::LeaveRoomNot& noti)
 {
 }
+

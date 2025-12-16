@@ -3,7 +3,7 @@
 void Room::JoinUser(uint64_t sessionId, const std::string& name, std::weak_ptr<ClientSession> session)
 {
 	std::lock_guard lock(m_lock);
-	m_users.emplace(sessionId, User(sessionId, name, session));
+	m_users.emplace(sessionId, std::make_shared<User>(sessionId, name, session));
 }
 
 void Room::LeaveUser(uint64_t sessionId)
@@ -17,16 +17,28 @@ void Room::ForEachUser(const std::function<void(const User&)>& fn) const
 	std::lock_guard lock(m_lock);
 	for (const auto& pair : m_users)
 	{
-		fn(pair.second);
+		fn(*pair.second);
 	}
 }
 
 void Room::Broadcast(std::shared_ptr<core::PacketBuffer> buffer, uint64_t excludeId)
 {
-	auto users = GetSessionPtrs(excludeId);
-	for (const auto& user : users)
+	std::vector<std::shared_ptr<User>> users{};
 	{
-		user->Send(buffer);
+		std::lock_guard lock(m_lock);
+		users.reserve(m_users.size());
+
+		for (const auto& [id, pUser] : m_users)
+		{
+			if (id == excludeId)
+				continue;
+			users.emplace_back(pUser);
+		}
+	}
+
+	for (const auto& pUser : users)
+	{
+		pUser->Send(buffer);
 	}
 }
 
@@ -34,25 +46,4 @@ bool Room::IsMember(uint64_t sessionId)
 {
 	std::lock_guard lock(m_lock);
 	return m_users.contains(sessionId);
-}
-
-core::Vector<std::shared_ptr<ClientSession>> Room::GetSessionPtrs(uint64_t excludeId) const
-{
-	core::Vector<std::shared_ptr<ClientSession>> ptrs;
-
-	std::lock_guard lock(m_lock);
-	ptrs.reserve(m_users.size());
-
-	for (const auto& pair : m_users)
-	{
-		if (pair.first == excludeId)
-			continue;
-
-		if (auto session = pair.second.GetWeakPtr().lock())
-		{
-			ptrs.emplace_back(session);
-		}
-	}
-
-	return ptrs;
 }

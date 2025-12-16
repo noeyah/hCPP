@@ -1,8 +1,9 @@
 ﻿#pragma once
+#include <memory>
 
 class Room;
 
 namespace Helper
 {
-	Room* GetRoom();
+	std::shared_ptr<Room> GetRoom();
 }

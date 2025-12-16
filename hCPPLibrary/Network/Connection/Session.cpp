@@ -105,7 +105,10 @@ namespace hlib
 
 	void Session::Close()
 	{
-		m_bConnected.store(false);
+		if (m_bConnected.exchange(false) == false)
+			return;
+		
+		OnDisconnected();
 
 		if (m_disconnectCallback)
 			m_disconnectCallback(m_id);

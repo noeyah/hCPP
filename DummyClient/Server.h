@@ -1,24 +1,20 @@
 ﻿#pragma once
 #include "core.h"
-#include "Packet/PacketHandler.h"
-#include "Packet/PacketDispatcher.h"
 
-class Server
+class Server : public Singleton<Server>
 {
-public:
-	Server(core::NetClientConfig config);
+	core::JobQueue m_jobQueue{};
+	std::shared_ptr<core::ThreadPool> m_pThreadPool{};
+	std::shared_ptr<core::Scheduler> m_pScheduler{};
+	std::shared_ptr<core::NetClient> m_pServer{};
 
+public:
+	Server() = default;
+
+	void Init(core::NetClientConfig config);
 	void Start();
 	void Stop();
 
-private:
-	core::JobQueue jobQueue_;
-	core::ThreadPool threadPool_;
-	core::Scheduler scheduler_;
-
-	PacketHandler packetHandler_;
-	PacketDispatcher packetDispatcher_;
-
-	core::NetClient netService_;
+	std::shared_ptr<core::Scheduler> GetScheduler() { return m_pScheduler; }
 };
 
