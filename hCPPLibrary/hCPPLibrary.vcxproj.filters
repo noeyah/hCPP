@@ -54,16 +54,10 @@
     <ClInclude Include="Thread\ThreadLocalStorage.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Memory\Resource\StompResource.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Memory\Container.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Memory\Memory.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Memory\Resource\StompSlimResource.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Memory\Allocator.h">
@@ -210,12 +204,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Network\WinsockSetup.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Memory\Resource\StompResource.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Memory\Resource\StompSlimResource.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Task\ThreadPool.cpp">

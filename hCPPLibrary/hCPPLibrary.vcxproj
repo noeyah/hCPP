@@ -201,8 +201,6 @@
     <ClInclude Include="Network\Socket\SocketUtil.h" />
     <ClInclude Include="Network\NetService\NetServer.h" />
     <ClInclude Include="Network\Connection\Session.h" />
-    <ClInclude Include="Memory\Resource\StompResource.h" />
-    <ClInclude Include="Memory\Resource\StompSlimResource.h" />
     <ClInclude Include="Task\ThreadPool.h" />
     <ClInclude Include="Network\WinsockSetup.h" />
     <ClInclude Include="Thread\WorkerThread.h" />
@@ -221,8 +219,6 @@
     <ClCompile Include="Network\Connection\SessionManager.cpp" />
     <ClCompile Include="Lock\SharedSpinLock.cpp" />
     <ClCompile Include="Task\Scheduler.cpp" />
-    <ClCompile Include="Memory\Resource\StompResource.cpp" />
-    <ClCompile Include="Memory\Resource\StompSlimResource.cpp" />
     <ClCompile Include="Network\Core\IocpDispatcher.cpp" />
     <ClCompile Include="Network\Connection\Listener.cpp" />
     <ClCompile Include="Network\NetService\NetService.cpp" />
