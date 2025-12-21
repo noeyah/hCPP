@@ -181,11 +181,9 @@
     <None Include="csharp\Room.cs" />
     <None Include="jinja2\cpp\PacketDispatcherInit.cpp.j2" />
     <None Include="jinja2\cpp\PacketEnums.h.j2" />
-    <None Include="jinja2\cpp\PacketHandler.h.j2" />
     <None Include="jinja2\cpp\PacketRegister.cpp.j2" />
     <None Include="jinja2\cpp_client\PacketDispatcherInit.cpp.j2" />
     <None Include="jinja2\cpp_client\PacketEnums.h.j2" />
-    <None Include="jinja2\cpp_client\PacketHandler.h.j2" />
     <None Include="jinja2\cpp_client\PacketID.h.j2" />
     <None Include="jinja2\cpp_client\PacketRegister.cpp.j2" />
     <None Include="jinja2\csharp\PacketHelper.cs.j2" />

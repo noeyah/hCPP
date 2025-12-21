@@ -68,7 +68,5 @@
     <None Include="jinja2\cpp_client\PacketDispatcherInit.cpp.j2" />
     <None Include="jinja2\cpp_client\PacketEnums.h.j2" />
     <None Include="jinja2\cpp\PacketEnums.h.j2" />
-    <None Include="jinja2\cpp\PacketHandler.h.j2" />
-    <None Include="jinja2\cpp_client\PacketHandler.h.j2" />
   </ItemGroup>
 </Project>
