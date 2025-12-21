@@ -149,6 +149,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Behavior\BehaviorTree.h" />
+    <ClInclude Include="Behavior\BehaviorTreeHelper.h" />
+    <ClInclude Include="bt.h" />
     <ClInclude Include="Command\CmdService.h" />
     <ClInclude Include="core.h" />
     <ClInclude Include="DB\DBQuery.h" />
