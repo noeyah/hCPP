@@ -6,8 +6,8 @@
 
 namespace hlib
 {
-	NetClient::NetClient(NetClientConfig config,IJobQueue& jobQueue)
-		: NetService(config, jobQueue), m_clientConfig(config)
+	NetClient::NetClient(NetConfig config,IJobQueue& jobQueue)
+		: NetService(config, jobQueue)
 	{
 	}
 
@@ -18,12 +18,12 @@ namespace hlib
 
 	bool NetClient::InitSocket()
 	{
-		for (size_t i = 0; i < m_clientConfig.connectCount; i++)
+		/*for (size_t i = 0; i < m_clientConfig.connectCount; i++)
 		{
 			Connect();
 		}
 
-		LOG_INFO("Connect {}", m_clientConfig.connectCount);
+		LOG_INFO("Connect {}", m_clientConfig.connectCount);*/
 		return true;
 	}
 
@@ -31,7 +31,7 @@ namespace hlib
 	{
 	}
 
-	void NetClient::Connect()
+	std::shared_ptr<Session> NetClient::Connect()
 	{
 		SOCKET socket = sock::Create();
 		ASSERT_CRASH(socket != INVALID_SOCKET);
@@ -41,5 +41,6 @@ namespace hlib
 		{
 			session->ConnectAsync();
 		}
+		return session;
 	}
 }

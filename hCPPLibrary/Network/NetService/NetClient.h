@@ -7,21 +7,18 @@
 namespace hlib
 {
 	class IJobQueue;
+	class Session;
 
 	class NetClient : public NetService
 	{
-		NetClientConfig m_clientConfig;
-
 	public:
-		NetClient(NetClientConfig config, IJobQueue& jobQueue);
+		NetClient(NetConfig config, IJobQueue& jobQueue);
 		~NetClient();
+		std::shared_ptr<Session> Connect();
 
 	protected:
 		virtual bool InitSocket() final;
 		virtual void CloseSocket() final;
-
-	private:
-		void Connect();
 	};
 
 }

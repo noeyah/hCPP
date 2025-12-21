@@ -3,8 +3,6 @@
 #include <string>
 #include "Config.h"
 #include "Util/Singleton.h"
-#include "Resource/StompResource.h"
-#include "Resource/StompSlimResource.h"
 #include "Resource/LogResourceWrapper.h"
 #include "Log.h"
 
@@ -59,18 +57,6 @@ namespace hlib
 				static std::pmr::synchronized_pool_resource POOL_RESOURCE(POOL_OPTIONS);
 				modeName = "Pool";
 				std::pmr::set_default_resource(&POOL_RESOURCE);
-			} break;
-			case MemoryMode::Stomp:
-			{
-				static hlib::resource::StompResource STOMP_RESOURCE;
-				modeName = "Stomp";
-				std::pmr::set_default_resource(&STOMP_RESOURCE);
-			} break;
-			case MemoryMode::StompSlim:
-			{
-				static hlib::resource::StompSlimResource STOMP_SLIM_RESOURCE;
-				modeName = "StompSlim";
-				std::pmr::set_default_resource(&STOMP_SLIM_RESOURCE);
 			} break;
 			case MemoryMode::Log:
 			{

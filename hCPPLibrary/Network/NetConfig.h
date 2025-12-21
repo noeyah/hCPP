@@ -19,8 +19,4 @@ namespace hlib
 		int32_t backlog = SOMAXCONN;
 	};
 
-	struct NetClientConfig : public NetConfig
-	{
-		size_t connectCount = 1;
-	};
 }

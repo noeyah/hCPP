@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 namespace hlib
 {
@@ -6,8 +6,6 @@ namespace hlib
 	{
 		None,
 		Pool,
-		Stomp,
-		StompSlim,
 		Log,
 	};
 
