@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "core.h"
 
+class ServerSession;
+
 class Server : public Singleton<Server>
 {
 	hlib::JobQueue m_jobQueue{};
@@ -11,10 +13,11 @@ class Server : public Singleton<Server>
 public:
 	Server() = default;
 
-	void Init(hlib::NetClientConfig config);
+	void Init(hlib::NetConfig& config);
 	void Start();
 	void Stop();
 
 	std::shared_ptr<hlib::Scheduler> GetScheduler() { return m_pScheduler; }
+	std::shared_ptr<ServerSession> Connect();
 };
 

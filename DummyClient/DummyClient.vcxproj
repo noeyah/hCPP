@@ -163,7 +163,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Helper.cpp" />
+    <ClCompile Include="Server\DummyManager.cpp" />
+    <ClCompile Include="Server\Dummy.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Packet\PacketDispatcher.cpp" />
     <ClCompile Include="Packet\PacketDispatcherInit.cpp" />
@@ -171,6 +172,12 @@
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="Packet\PacketHandler.cpp" />
     <ClCompile Include="Server\ServerSession.cpp" />
+    <ClCompile Include="Server\Task\Connect.cpp" />
+    <ClCompile Include="Server\Task\JoinRoom.cpp" />
+    <ClCompile Include="Server\Task\Chat.cpp" />
+    <ClCompile Include="Server\Task\Wait.cpp" />
+    <ClCompile Include="Server\Task\LeaveRoom.cpp" />
+    <ClCompile Include="Server\Task\Think.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\hCPPLibrary\hCPPLibrary.vcxproj">
@@ -181,7 +188,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Helper.h" />
+    <ClInclude Include="Server\DummyManager.h" />
+    <ClInclude Include="Server\Dummy.h" />
     <ClInclude Include="Packet\PacketDispatcher.h" />
     <ClInclude Include="Packet\PacketEnums.h" />
     <ClInclude Include="Packet\PacketID.h" />
@@ -189,6 +197,13 @@
     <ClInclude Include="Server.h" />
     <ClInclude Include="Packet\PacketHandler.h" />
     <ClInclude Include="Server\ServerSession.h" />
+    <ClInclude Include="Server\Task\Connect.h" />
+    <ClInclude Include="Server\Task\JoinRoom.h" />
+    <ClInclude Include="Server\Task\Chat.h" />
+    <ClInclude Include="Server\Task\Wait.h" />
+    <ClInclude Include="Server\Task\LeaveRoom.h" />
+    <ClInclude Include="Server\Task\Base.h" />
+    <ClInclude Include="Server\Task\Think.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
