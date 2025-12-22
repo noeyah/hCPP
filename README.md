@@ -1,5 +1,4 @@
-﻿# C++/C# Portfolio
-
+﻿
 ## ✨ 프로젝트 개요
 
  이 프로젝트는 Windows 환경에서 동작하는 C++ 서버 프레임워크입니다.
@@ -24,6 +23,7 @@
 - 라이브러리 : [Protobuf 5.29.3](https://github.com/protocolbuffers/protobuf), [Google Test](https://github.com/google/googletest)
 - 스크립트 언어 : Python 3.13.3
 
+
 ## 📚 프로젝트 구조
 
 - **hCPPLibrary** : 핵심 공용 라이브러리
@@ -39,6 +39,7 @@
 - **DummyClient** : 테스트용 C++ 클라이언트
 - **TestClient** : 테스트용 WinForm 클라이언트
 - **GTest**: 라이브러리 기능 단위 테스트 (Google Test)
+
 
 ## 🧩 아키텍처
 
