@@ -6,15 +6,11 @@
 
 
 ### 📌 주요 기능
-- [공통]
-- **비동기 네트워크**
+- (C++/C#) **비동기 네트워크**
+- (C++) **I/O와 로직의 분리** : Job Queue를 이용해 I/O 스레드와 로직 스레드 분리
+- (C++) **멀티스레드 및 동시성** : SpinLock, SharedSpinLock 구현 및 Thread Pool을 통한 멀티스레드 관리
+- (C++) **유연한 로직** : Behavior Tree(행동 트리), Task Scheduler, DB Connection Pool, Memory Pool 구현
 - 프로토콜 및 직렬화 : Protobuf를 이용한 패킷 직렬화 및 자동 생성 스크립트 작성
-- [C++]
-- **I/O와 로직의 분리** : Job Queue를 이용해 I/O 스레드와 로직 스레드 분리
-- **멀티스레드 및 동시성** : SpinLock, SharedSpinLock 구현 및 Thread Pool을 통한 멀티스레드 관리
-- **유연한 로직** : Behavior Tree(행동 트리), Task Scheduler, DB Connection Pool, Memory Pool 구현
-- [C#]
-- SocketAsyncEventArgs을 활용한 비동기 네트워크 라이브러리
 
 
 ### 💻 개발 환경
