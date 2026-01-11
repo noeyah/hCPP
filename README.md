@@ -1,17 +1,20 @@
 ﻿
 ## ✨ 프로젝트 개요
 
- 이 프로젝트는 Windows 환경에서 동작하는 C++ 서버 프레임워크입니다.
- 확장성, 안정성, 그리고 생산성을 목표로 서버의 핵심 컴포넌트를 직접 설계하고 구현했습니다.
- 구현한 라이브러리를 사용하여 동일한 프로토콜로 통신하는 C++/C# 테스트 서버를 각각 제작했습니다. C#으로 작성된 클라이언트는 두 서버 중 하나에 선택적으로 접속할 수 있습니다.
+ 이 프로젝트는 서버 개발에 필요한 기능을 지원하는 C++, C# 라이브러리입니다.
+ 확장성, 안정성, 그리고 생산성을 목표로 서버의 핵심 컴포넌트를 C++로 직접 설계하고 구현했으며, 비슷한 구조로 C# 네트워크 라이브러리를 구현하여 상호 운용이 가능합니다.
+
 
 ### 📌 주요 기능
-- **비동기 네트워크** : Windows의 IOCP(I/O Completion Port) 기반 비동기 소켓 통신
-- **I/O와 로직의 분리** : Job Queue를 이용해 네트워크 I/O 스레드와 게임 로직 스레드를 분리하여 병목 현상 최소화
-- **멀티스레드 및 동시성** : SpinLock, SharedSpinLock 및 Thread Pool을 통한 안정적인 동시성 제어
-- **유연한 비즈니스 로직** : Behavior Tree(행동 트리) 라이브러리를 구현하여 AI와 같은 복잡한 로직을 모듈화
-- **프로토콜 및 직렬화** : Protobuf를 이용한 패킷 직렬화 및 파서 자동 생성 스크립트 작성
-- **기타 서버 기반 요소** : 시간 기반 작업을 위한 Scheduler, DB Connection Pool, Memory Pool 등 구현
+#### 공통
+- **비동기 네트워크**
+- 프로토콜 및 직렬화 : Protobuf를 이용한 패킷 직렬화 및 자동 생성 스크립트 작성
+#### C++
+- **I/O와 로직의 분리** : Job Queue를 이용해 I/O 스레드와 로직 스레드 분리
+- **멀티스레드 및 동시성** : SpinLock, SharedSpinLock 구현 및 Thread Pool을 통한 멀티스레드 관리
+- **유연한 로직** : Behavior Tree(행동 트리), Task Scheduler, DB Connection Pool, Memory Pool 구현
+#### C#
+- SocketAsyncEventArgs을 활용한 비동기 네트워크 라이브러리
 
 
 ### 💻 개발 환경
@@ -25,20 +28,25 @@
 
 
 ## 📚 프로젝트 구조
-
-- **hCPPLibrary** : 핵심 공용 라이브러리
-  - `Network/` : IOCP 기반 네트워크 엔진
+#### C++
+- **hCPPLibrary** : 서버 핵심 라이브러리
+  - `Network/` : IOCP 기반 비동기 네트워크
   - `Thread/`, `Lock/` : 스레드 풀, 스핀락 등 동시성 관련 모듈
   - `Behavior/` : 행동 트리(Behavior Tree) 라이브러리
   - `DB/` : 데이터베이스 커넥션 풀
   - `Memory/` : 메모리 풀, 오브젝트 풀
-- **Packet**: Protobuf 기반 패킷 정의 및 코드 생성 스크립트
-  - `proto/` : `.proto` 패킷 원형 파일
-  - `generate_packet.py` : C++/C# 코드를 생성하는 Python 스크립트
 - **TestServer** : `hCPPLibrary`를 사용하여 만든 테스트용 서버
-- **DummyClient** : 테스트용 C++ 클라이언트
-- **TestClient** : 테스트용 WinForm 클라이언트
-- **GTest**: 라이브러리 기능 단위 테스트 (Google Test)
+- **DummyClient** : 테스트용 더미 클라이언트
+- **GTest**: 단위 테스트 (Google Test)
+#### C#
+- **hCSharpLibrary** : .NET 기반 비동기 네트워크 라이브러리
+- **TestServer_CS_** : `hCSharpLibrary`를 사용하여 만든 테스트용 서버
+- **TestClient** : WinForm 기반 채팅 및 접속 테스트 클라이언트
+#### 공용
+- **Packet**: Protobuf 기반 패킷 정의 및 코드 생성 스크립트
+  - `proto/`, `generate_packet.py`
+
+
 
 
 ## 🧩 아키텍처
